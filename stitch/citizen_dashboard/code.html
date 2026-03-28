@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AirWatch Cameroun - Yaoundé</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container": "#06203f",
+              "on-surface": "#d5e3ff",
+              "on-secondary": "#173536",
+              "inverse-primary": "#00696d",
+              "tertiary-container": "#975731",
+              "primary-fixed-dim": "#81d4d8",
+              "on-surface-variant": "#bec9c9",
+              "outline-variant": "#3e4949",
+              "secondary-container": "#314e4f",
+              "primary": "#81d4d8",
+              "on-primary-fixed-variant": "#004f52",
+              "on-secondary-fixed-variant": "#2f4c4d",
+              "tertiary-fixed-dim": "#ffb68e",
+              "primary-fixed": "#9df0f4",
+              "surface": "#00132d",
+              "on-tertiary-fixed-variant": "#6f3814",
+              "on-primary-fixed": "#002021",
+              "on-tertiary-container": "#ffe1d2",
+              "surface-bright": "#243a5a",
+              "inverse-surface": "#d5e3ff",
+              "on-secondary-fixed": "#002021",
+              "tertiary-fixed": "#ffdbca",
+              "surface-container-highest": "#1f3555",
+              "secondary": "#adccce",
+              "error-container": "#93000a",
+              "primary-container": "#0d7377",
+              "on-primary": "#003739",
+              "on-tertiary-fixed": "#331200",
+              "on-background": "#d5e3ff",
+              "surface-container-low": "#021c3a",
+              "surface-dim": "#00132d",
+              "error": "#ffb4ab",
+              "on-error-container": "#ffdad6",
+              "on-error": "#690005",
+              "surface-container-lowest": "#000e24",
+              "on-tertiary": "#532201",
+              "secondary-fixed": "#c9e9ea",
+              "on-primary-container": "#a2f5f9",
+              "secondary-fixed-dim": "#adccce",
+              "inverse-on-surface": "#1a3150",
+              "surface-tint": "#81d4d8",
+              "surface-variant": "#1f3555",
+              "outline": "#889393",
+              "background": "#00132d",
+              "tertiary": "#ffb68e",
+              "on-secondary-container": "#9fbebf",
+              "surface-container-high": "#132a4a"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #00132d; color: #d5e3ff; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .aqi-glow { box-shadow: 0 0 60px 10px rgba(249, 115, 22, 0.25); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#00132d]/70 backdrop-blur-xl flex justify-between items-center px-6 h-16 w-full">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#81d4d8]" data-icon="location_on">location_on</span>
+<h1 class="font-['Inter'] font-bold text-lg tracking-tight text-[#81d4d8]">Yaoundé</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400 hover:bg-white/10 transition-colors p-2 rounded-full active:scale-95 duration-200" data-icon="settings">settings</span>
+</div>
+</header>
+<main class="pt-20 px-4 max-w-[450px] mx-auto space-y-8">
+<!-- Hero Section: AQI -->
+<section class="relative flex flex-col items-center justify-center py-10 overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-b from-[#f97316]/5 to-transparent rounded-full blur-3xl opacity-30 scale-150"></div>
+<div class="relative z-10 flex flex-col items-center">
+<span class="text-[11px] font-bold uppercase tracking-[0.2em] text-[#F97316] mb-2">Qualité de l'air</span>
+<div class="aqi-glow bg-[#F97316]/10 rounded-full w-48 h-48 flex items-center justify-center border border-[#F97316]/20">
+<span class="text-7xl font-extrabold tracking-tighter text-white">145</span>
+</div>
+<div class="mt-6 px-6 py-1.5 bg-[#F97316] rounded-full shadow-lg shadow-[#F97316]/20">
+<span class="text-xs font-black uppercase tracking-widest text-[#00132d]">UNHEALTHY</span>
+</div>
+<p class="mt-4 text-on-surface-variant text-sm font-medium opacity-80">Mauvais pour les groupes sensibles</p>
+</div>
+</section>
+<!-- Date Tabs -->
+<nav class="flex p-1 bg-surface-container-low rounded-xl">
+<button class="flex-1 py-2 text-xs font-bold uppercase tracking-wider text-[#81d4d8] bg-[#0d7377]/20 rounded-lg">Aujourd'hui</button>
+<button class="flex-1 py-2 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white transition-all">Demain</button>
+<button class="flex-1 py-2 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white transition-all">Après-demain</button>
+</nav>
+<!-- Advice Section -->
+<section class="space-y-4">
+<div class="flex items-center justify-between">
+<h2 class="text-sm font-bold uppercase tracking-[0.1em] text-on-surface">Conseils personnalisés</h2>
+<div class="flex gap-1 overflow-x-auto pb-1 no-scrollbar">
+<span class="px-3 py-1 bg-surface-container-high rounded-full text-[10px] font-bold text-primary border border-primary/20 whitespace-nowrap">Parent</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-5 space-y-4 border border-outline-variant/10">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary" data-icon="health_and_safety">health_and_safety</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error text-lg" data-icon="warning">warning</span>
+<p class="text-sm font-medium text-on-surface">Limiter l'effort physique à l'extérieur</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="window">window</span>
+<p class="text-sm font-medium text-on-surface">Garder les fenêtres fermées</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="mask">masks</span>
+<p class="text-sm font-medium text-on-surface">Porter un masque à l'extérieur</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Feedback Card (Contextual Simulation) -->
+<section class="bg-surface-container-highest/30 rounded-xl p-4 border-l-4 border-primary relative overflow-hidden">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="text-[10px] font-black uppercase tracking-widest text-primary mb-1">Dernier rapport</h3>
+<p class="text-sm font-bold text-on-surface">Envoyé aux autorités</p>
+</div>
+<div class="text-right">
+<span class="text-[10px] font-medium text-on-surface-variant">Il y a 5s</span>
+</div>
+</div>
+<div class="flex gap-4 mt-3 pt-3 border-t border-white/5">
+<div class="flex flex-col">
+<span class="text-[9px] uppercase tracking-tighter text-on-surface-variant">AQI Détecté</span>
+<span class="text-sm font-bold text-white">145</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[9px] uppercase tracking-tighter text-on-surface-variant">Type</span>
+<span class="text-sm font-bold text-white">Fumée de cheminée</span>
+</div>
+</div>
+</section>
+<!-- Main CTA -->
+<div class="fixed bottom-24 left-1/2 -translate-x-1/2 w-full max-w-[375px] px-6 z-40">
+<button class="w-full h-14 bg-gradient-to-r from-[#81d4d8] to-[#0d7377] rounded-xl flex items-center justify-center gap-3 shadow-[0_8px_24px_rgba(13,115,119,0.4)] active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[#002021]" data-icon="campaign" data-weight="fill" style="font-variation-settings: 'FILL' 1;">campaign</span>
+<span class="font-bold text-[#002021] tracking-tight">Signaler une pollution</span>
+</button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 pb-safe px-4 bg-[#021c3a] rounded-t-2xl shadow-[0_-8px_24px_rgba(0,0,0,0.4)]">
+<div class="flex flex-col items-center justify-center text-[#81d4d8] bg-[#0d7377]/20 rounded-xl px-4 py-1 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-['Inter'] font-medium text-[11px] uppercase tracking-[0.05em] mt-1">Dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 px-4 py-1 hover:text-white transition-all active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-['Inter'] font-medium text-[11px] uppercase tracking-[0.05em] mt-1">Map</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 px-4 py-1 hover:text-white transition-all active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="Assessment">assessment</span>
+<span class="font-['Inter'] font-medium text-[11px] uppercase tracking-[0.05em] mt-1">Reports</span>
+</div>
+</nav>
+</body></html>

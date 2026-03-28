@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AirWatch Cameroun - Tableau de Bord Gouvernemental</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container": "#06203f",
+              "on-surface": "#d5e3ff",
+              "on-secondary": "#173536",
+              "inverse-primary": "#00696d",
+              "tertiary-container": "#975731",
+              "primary-fixed-dim": "#81d4d8",
+              "on-surface-variant": "#bec9c9",
+              "outline-variant": "#3e4949",
+              "secondary-container": "#314e4f",
+              "primary": "#81d4d8",
+              "on-primary-fixed-variant": "#004f52",
+              "on-secondary-fixed-variant": "#2f4c4d",
+              "tertiary-fixed-dim": "#ffb68e",
+              "primary-fixed": "#9df0f4",
+              "surface": "#00132d",
+              "on-tertiary-fixed-variant": "#6f3814",
+              "on-primary-fixed": "#002021",
+              "on-tertiary-container": "#ffe1d2",
+              "surface-bright": "#243a5a",
+              "inverse-surface": "#d5e3ff",
+              "on-secondary-fixed": "#002021",
+              "tertiary-fixed": "#ffdbca",
+              "surface-container-highest": "#1f3555",
+              "secondary": "#adccce",
+              "error-container": "#93000a",
+              "primary-container": "#0d7377",
+              "on-primary": "#003739",
+              "on-tertiary-fixed": "#331200",
+              "on-background": "#d5e3ff",
+              "surface-container-low": "#021c3a",
+              "surface-dim": "#00132d",
+              "error": "#ffb4ab",
+              "on-error-container": "#ffdad6",
+              "on-error": "#690005",
+              "surface-container-lowest": "#000e24",
+              "on-tertiary": "#532201",
+              "secondary-fixed": "#c9e9ea",
+              "on-primary-container": "#a2f5f9",
+              "secondary-fixed-dim": "#adccce",
+              "inverse-on-surface": "#1a3150",
+              "surface-tint": "#81d4d8",
+              "surface-variant": "#1f3555",
+              "outline": "#889393",
+              "background": "#00132d",
+              "tertiary": "#ffb68e",
+              "on-secondary-container": "#9fbebf",
+              "surface-container-high": "#132a4a"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .aqi-pulse-red {
+            box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+            animation: pulse-red 2s infinite;
+        }
+        @keyframes pulse-red {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #3e4949; border-radius: 10px; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary/30 min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#00132d]/70 backdrop-blur-xl flex justify-between items-center px-6 h-16 w-full">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#81d4d8]" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<h1 class="font-['Inter'] font-bold text-lg tracking-tight">Yaoundé</h1>
+</div>
+<div class="font-black text-[#81d4d8] uppercase tracking-widest text-sm">AirWatch HQ</div>
+<div class="flex items-center gap-4">
+<button class="hover:bg-white/10 transition-colors p-2 rounded-full active:scale-95 duration-200">
+<span class="material-symbols-outlined text-slate-400">settings</span>
+</button>
+</div>
+</header>
+<main class="pt-20 px-4 space-y-6 max-w-5xl mx-auto">
+<!-- Hero Map Section -->
+<section class="relative overflow-hidden rounded-xl h-96 bg-surface-container-low shadow-2xl">
+<div class="absolute inset-0 opacity-40 grayscale contrast-125" data-alt="detailed topographic dark navy map of cameroon with subtle glowing city nodes and clean vector lines editorial style" data-location="Cameroon" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDlLNjdsUTlzfIx9AI1A0qrQ1ujE682qqDdJw1U6-zJvdeeLorDzDna-TPy9V20s-dQXIx50_yP12_2wFPyIW7E7gefo3_UQxcYoe33ys_9PpDM4Yo9X1QWi0wwjN932u1BCTzIfNLL31gmlVq7aI_tEw0pmWfO6AEJR10lfO87F0MXnYVJRZo-EySMJNJFLhd12F30t5kBzZpFkE7DiYM3_jsptyJU2kMBtaWfcA9B6QyW3FOIltp85Q1LA1DzoYlNIG6_ySRLNZ8')"></div>
+<!-- AQI Data Points (Simulated 42 cities) -->
+<div class="absolute inset-0 pointer-events-none">
+<!-- Douala -->
+<div class="absolute top-2/3 left-1/4 w-3 h-3 bg-red-500 rounded-full aqi-pulse-red ring-4 ring-red-500/20"></div>
+<!-- Yaoundé -->
+<div class="absolute top-3/4 left-1/3 w-3 h-3 bg-yellow-500 rounded-full ring-4 ring-yellow-500/20"></div>
+<!-- Maroua -->
+<div class="absolute top-1/4 left-3/4 w-2 h-2 bg-green-500 rounded-full"></div>
+<!-- Garoua -->
+<div class="absolute top-1/3 left-2/3 w-2 h-2 bg-green-500 rounded-full"></div>
+<!-- Bamenda -->
+<div class="absolute top-1/2 left-1/5 w-2 h-2 bg-orange-500 rounded-full"></div>
+<!-- Kribi -->
+<div class="absolute top-[85%] left-1/4 w-2 h-2 bg-green-500 rounded-full"></div>
+<!-- Scattered dots for remaining 42 -->
+<div class="absolute top-1/2 left-1/2 w-1.5 h-1.5 bg-green-400 opacity-50 rounded-full"></div>
+<div class="absolute top-1/4 left-1/2 w-1.5 h-1.5 bg-yellow-400 opacity-50 rounded-full"></div>
+</div>
+<div class="absolute bottom-4 left-4 right-4 flex justify-between items-end">
+<div class="bg-surface-container/80 backdrop-blur-md p-3 rounded-lg border border-outline-variant/15">
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-2">Légende AQI</p>
+<div class="flex gap-2">
+<div class="w-2 h-2 rounded-full bg-green-500"></div>
+<div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+<div class="w-2 h-2 rounded-full bg-orange-500"></div>
+<div class="w-2 h-2 rounded-full bg-red-500"></div>
+</div>
+</div>
+<button class="bg-primary-container text-on-primary-container px-4 py-2 rounded-xl font-medium text-sm flex items-center gap-2 shadow-lg active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-sm">download</span>
+                    Rapport Mensuel (PDF)
+                </button>
+</div>
+</section>
+<!-- Alerts & Patterns Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Alert Panel -->
+<div class="bg-surface-container-low rounded-xl p-4 flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<h2 class="font-headline font-bold text-on-surface tracking-tight">Panneau d'Alertes</h2>
+<span class="material-symbols-outlined text-primary">notification_important</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest rounded-xl border-l-4 border-slate-500">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400">check_circle</span>
+<div>
+<p class="text-sm font-bold">Niveau 1: Stable</p>
+<p class="text-[10px] text-on-surface-variant uppercase">Nord-Cameroun</p>
+</div>
+</div>
+<span class="text-[10px] font-mono text-on-surface-variant">08:42</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest rounded-xl border-l-4 border-yellow-500">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-yellow-500">warning</span>
+<div>
+<p class="text-sm font-bold">Niveau 2: Modéré</p>
+<p class="text-[10px] text-on-surface-variant uppercase">Yaoundé Mvan</p>
+</div>
+</div>
+<span class="text-[10px] font-mono text-on-surface-variant">09:15</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-error-container/20 rounded-xl border-l-4 border-error aqi-pulse-red">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">error</span>
+<div>
+<p class="text-sm font-bold text-error">Niveau 3: CRITIQUE</p>
+<p class="text-[10px] text-on-error-container uppercase">Douala Bassa</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-error animate-pulse text-sm">volume_up</span>
+<span class="text-[10px] font-mono text-error">EN COURS</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Recurring Pattern Detection -->
+<div class="bg-surface-container-low rounded-xl p-4 flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<h2 class="font-headline font-bold text-on-surface tracking-tight">Détection de Patterns</h2>
+<span class="material-symbols-outlined text-primary">analytics</span>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/10">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-primary font-bold text-lg">Zone Industrielle Bassa</p>
+<p class="text-xs text-on-surface-variant">Analyse de récurrence (30j)</p>
+</div>
+<div class="bg-primary/10 text-primary text-[10px] font-black px-2 py-1 rounded">91% MATCH</div>
+</div>
+<div class="flex items-center gap-4 mb-4">
+<div class="flex-1 h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[91%]"></div>
+</div>
+<span class="text-xs font-mono font-bold">47 rapports</span>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                        Corrélation forte détectée avec les cycles de production usiniers (04h00 - 07h00). Pic de particules fines PM2.5 systématique.
+                    </p>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-surface-container-high text-on-surface text-xs font-bold py-2 rounded-lg hover:bg-surface-bright transition-colors">DÉTAILS ZONE</button>
+<button class="flex-1 bg-surface-container-high text-on-surface text-xs font-bold py-2 rounded-lg hover:bg-surface-bright transition-colors">ACTIVER ALERTE</button>
+</div>
+</div>
+</div>
+<!-- Citizen Reports Feed -->
+<section class="bg-surface-container-low rounded-xl p-4 mb-8">
+<div class="flex justify-between items-center mb-6">
+<div>
+<h2 class="font-headline font-bold text-on-surface tracking-tight">Signalements Citoyens</h2>
+<p class="text-xs text-on-surface-variant">Flux temps-réel (Classification Auto)</p>
+</div>
+<span class="bg-primary-container text-on-primary-container text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Live Feed</span>
+</div>
+<div class="space-y-1">
+<!-- Report Item -->
+<div class="flex items-center gap-4 p-4 hover:bg-white/5 transition-colors cursor-pointer group">
+<div class="w-10 h-10 rounded-full bg-error-container/30 flex items-center justify-center text-error">
+<span class="material-symbols-outlined">factory</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<h3 class="text-sm font-bold uppercase tracking-tight">Fumée industrielle</h3>
+<span class="text-[10px] font-black text-error bg-error/10 px-2 py-0.5 rounded">CRITICAL</span>
+</div>
+<p class="text-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">location_on</span> Bassa, Douala • 4.0511, 9.7679
+                        </p>
+</div>
+<span class="text-[10px] font-mono text-on-surface-variant group-hover:text-primary transition-colors">Il y a 2m</span>
+</div>
+<!-- Report Item -->
+<div class="flex items-center gap-4 p-4 hover:bg-white/5 transition-colors cursor-pointer group">
+<div class="w-10 h-10 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500">
+<span class="material-symbols-outlined">local_fire_department</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<h3 class="text-sm font-bold uppercase tracking-tight">Brûlage de déchets</h3>
+<span class="text-[10px] font-black text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded">MODERATE</span>
+</div>
+<p class="text-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">location_on</span> Mvan, Yaoundé • 3.8480, 11.5192
+                        </p>
+</div>
+<span class="text-[10px] font-mono text-on-surface-variant group-hover:text-primary transition-colors">Il y a 14m</span>
+</div>
+<!-- Report Item -->
+<div class="flex items-center gap-4 p-4 hover:bg-white/5 transition-colors cursor-pointer group">
+<div class="w-10 h-10 rounded-full bg-slate-500/10 flex items-center justify-center text-slate-400">
+<span class="material-symbols-outlined">cloud</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<h3 class="text-sm font-bold uppercase tracking-tight">Poussière de chantier</h3>
+<span class="text-[10px] font-black text-slate-400 bg-slate-400/10 px-2 py-0.5 rounded">LOW</span>
+</div>
+<p class="text-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">location_on</span> Odza, Yaoundé • 3.8115, 11.5358
+                        </p>
+</div>
+<span class="text-[10px] font-mono text-on-surface-variant group-hover:text-primary transition-colors">Il y a 45m</span>
+</div>
+</div>
+<button class="w-full mt-4 py-3 border-t border-outline-variant/10 text-on-surface-variant text-[11px] font-bold uppercase tracking-widest hover:text-primary transition-colors">
+                Voir tous les rapports
+            </button>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 pb-safe px-4 bg-[#021c3a] rounded-t-2xl shadow-[0_-8px_24px_rgba(0,0,0,0.4)]">
+<a class="flex flex-col items-center justify-center text-[#81d4d8] bg-[#0d7377]/20 rounded-xl px-4 py-1 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-['Inter'] font-medium text-[11px] uppercase tracking-[0.05em]">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 px-4 py-1 hover:text-white transition-all active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">map</span>
+<span class="font-['Inter'] font-medium text-[11px] uppercase tracking-[0.05em]">Map</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 px-4 py-1 hover:text-white transition-all active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-['Inter'] font-medium text-[11px] uppercase tracking-[0.05em]">Reports</span>
+</a>
+</nav>
+</body></html>

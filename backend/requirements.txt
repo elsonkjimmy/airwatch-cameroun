@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+supabase
+httpx
+python-dotenv
+joblib
+pydantic
+pydantic-settings
+python-multipart
+websockets

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container": "#06203f",
+              "on-surface": "#d5e3ff",
+              "on-secondary": "#173536",
+              "inverse-primary": "#00696d",
+              "tertiary-container": "#975731",
+              "primary-fixed-dim": "#81d4d8",
+              "on-surface-variant": "#bec9c9",
+              "outline-variant": "#3e4949",
+              "secondary-container": "#314e4f",
+              "primary": "#81d4d8",
+              "on-primary-fixed-variant": "#004f52",
+              "on-secondary-fixed-variant": "#2f4c4d",
+              "tertiary-fixed-dim": "#ffb68e",
+              "primary-fixed": "#9df0f4",
+              "surface": "#00132d",
+              "on-tertiary-fixed-variant": "#6f3814",
+              "on-primary-fixed": "#002021",
+              "on-tertiary-container": "#ffe1d2",
+              "surface-bright": "#243a5a",
+              "inverse-surface": "#d5e3ff",
+              "on-secondary-fixed": "#002021",
+              "tertiary-fixed": "#ffdbca",
+              "surface-container-highest": "#1f3555",
+              "secondary": "#adccce",
+              "error-container": "#93000a",
+              "primary-container": "#0d7377",
+              "on-primary": "#003739",
+              "on-tertiary-fixed": "#331200",
+              "on-background": "#d5e3ff",
+              "surface-container-low": "#021c3a",
+              "surface-dim": "#00132d",
+              "error": "#ffb4ab",
+              "on-error-container": "#ffdad6",
+              "on-error": "#690005",
+              "surface-container-lowest": "#000e24",
+              "on-tertiary": "#532201",
+              "secondary-fixed": "#c9e9ea",
+              "on-primary-container": "#a2f5f9",
+              "secondary-fixed-dim": "#adccce",
+              "inverse-on-surface": "#1a3150",
+              "surface-tint": "#81d4d8",
+              "surface-variant": "#1f3555",
+              "outline": "#889393",
+              "background": "#00132d",
+              "tertiary": "#ffb68e",
+              "on-secondary-container": "#9fbebf",
+              "surface-container-high": "#132a4a"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #00132d; }
+        ::-webkit-scrollbar-thumb { background: #132a4a; border-radius: 10px; }
+        .hero-gradient {
+            background: radial-gradient(circle at top right, #0d737720 0%, transparent 70%);
+        }
+        .map-mesh {
+            background-image: radial-gradient(#81d4d810 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body min-h-screen selection:bg-primary/30">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 bg-[#00132d]/70 backdrop-blur-xl flex justify-between items-center px-6 h-16 w-full">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#81d4d8]" data-icon="location_on">location_on</span>
+<span class="font-['Inter'] font-bold text-lg tracking-tight text-on-surface">Yaoundé</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-black text-[#81d4d8] uppercase tracking-widest text-sm">AIRWATCH</span>
+<button class="hover:bg-white/10 transition-colors p-2 rounded-full active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[#81d4d8]" data-icon="settings">settings</span>
+</button>
+</div>
+</header>
+<main class="pt-20 pb-24 px-4 max-w-[375px] mx-auto hero-gradient">
+<!-- Welcome Hero -->
+<section class="mb-8">
+<h1 class="text-[3.5rem] leading-none font-black text-primary tracking-tighter mb-2">92</h1>
+<p class="font-label text-sm uppercase tracking-wider text-on-surface-variant font-semibold">Indice AQI • Qualité Modérée</p>
+<div class="mt-6 flex items-center justify-between bg-surface-container-low p-4 rounded-xl">
+<div>
+<p class="text-xs text-on-surface-variant uppercase tracking-widest mb-1">Impact Total</p>
+<p class="text-xl font-bold text-primary">+12.4k Arbres</p>
+</div>
+<button class="bg-primary-container text-on-primary-container px-4 py-2 rounded-xl font-bold text-sm flex items-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-sm" data-icon="download">download</span>
+                    Rapport PDF
+                </button>
+</div>
+</section>
+<!-- Interactive Map Mockup -->
+<section class="mb-8 space-y-4">
+<div class="flex justify-between items-end">
+<h2 class="font-headline font-bold text-xl tracking-tight">Zones de Reforestation</h2>
+<span class="text-xs text-primary font-medium">CAMEROUN LIVE</span>
+</div>
+<div class="relative h-[400px] w-full bg-surface-container rounded-2xl overflow-hidden shadow-2xl group">
+<!-- Map Background -->
+<div class="absolute inset-0 map-mesh opacity-30"></div>
+<img alt="Cameroon Reforestation Map" class="w-full h-full object-cover mix-blend-lighten opacity-60" data-alt="stylized dark navy topographic map of cameroon with glowing teal and orange heatmap regions minimalist data visualization aesthetic" data-location="Cameroon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYZfPuGWIrL-UCei4sRlvlsVgKnjAZzgS3uJfHRaPsgxnZTivwQU_whJLW3NFC-DiJ5r-MwFKiqTq-c19cMt1YDvWGccY3d3jctV2WkIReD06OtpFXiWE7tk7aCm4m8Tm1ILfdVmxFbOe7Vk-6KZHVdI5uB_25x4cOdUsby0exyQsm6QBq5ezrjVp-StIvpsU54Mu0ZpY7rUmY_-i1ln0v7x9fWTrNwNicCkOySeqbGF3aCDpcM7frZgUUFRkMlcijVldFDxnBYB8"/>
+<!-- Zone Popup (Simulated) -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] bg-surface-container-highest/90 backdrop-blur-md p-5 rounded-xl border border-white/5 shadow-2xl">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-bold text-sm text-on-surface">Zone de Douala</h3>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">Littoral Region</p>
+</div>
+<span class="bg-error-container text-on-error-container text-[10px] px-2 py-0.5 rounded-full font-bold">URGENT</span>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-4">
+<div class="space-y-1">
+<p class="text-[10px] text-on-surface-variant uppercase">Priorité</p>
+<p class="text-lg font-black text-primary">8.5<span class="text-xs font-normal">/10</span></p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] text-on-surface-variant uppercase">NDVI Index</p>
+<p class="text-lg font-black text-tertiary">0.42</p>
+</div>
+</div>
+<div class="border-t border-white/10 pt-4">
+<p class="text-[10px] text-on-surface-variant uppercase mb-2">Espèces Recommandées</p>
+<div class="flex flex-wrap gap-1">
+<span class="bg-secondary-container text-on-secondary-container text-[9px] px-2 py-0.5 rounded-lg">Pterocarpus soyauxii</span>
+<span class="bg-secondary-container text-on-secondary-container text-[9px] px-2 py-0.5 rounded-lg">Terminalia superba</span>
+</div>
+</div>
+</div>
+<!-- Pulse Indicators -->
+<div class="absolute top-1/4 right-1/3 w-3 h-3 bg-primary rounded-full animate-ping opacity-75"></div>
+<div class="absolute bottom-1/3 left-1/4 w-3 h-3 bg-error rounded-full animate-pulse"></div>
+</div>
+</section>
+<!-- AQI Historical Chart -->
+<section class="mb-8 space-y-4">
+<h2 class="font-headline font-bold text-xl tracking-tight">Historique PM2.5</h2>
+<div class="bg-surface-container-low p-6 rounded-2xl">
+<div class="flex items-end justify-between h-32 gap-1">
+<div class="w-2 bg-primary/20 rounded-t-sm h-[40%]"></div>
+<div class="w-2 bg-primary/20 rounded-t-sm h-[55%]"></div>
+<div class="w-2 bg-primary/40 rounded-t-sm h-[70%]"></div>
+<div class="w-2 bg-primary/20 rounded-t-sm h-[45%]"></div>
+<div class="w-2 bg-primary/60 rounded-t-sm h-[85%]"></div>
+<div class="w-2 bg-primary rounded-t-sm h-[95%]"></div>
+<div class="w-2 bg-primary/50 rounded-t-sm h-[60%]"></div>
+<div class="w-2 bg-primary/20 rounded-t-sm h-[30%]"></div>
+<div class="w-2 bg-primary/30 rounded-t-sm h-[50%]"></div>
+<div class="w-2 bg-primary/80 rounded-t-sm h-[75%]"></div>
+<div class="w-2 bg-primary/20 rounded-t-sm h-[40%]"></div>
+<div class="w-2 bg-primary/40 rounded-t-sm h-[65%]"></div>
+</div>
+<div class="flex justify-between mt-4 text-[10px] text-on-surface-variant font-medium uppercase tracking-widest">
+<span>Il y a 30 jours</span>
+<span>Aujourd'hui</span>
+</div>
+</div>
+</section>
+<!-- Before/After Impact Tracker -->
+<section class="mb-12 space-y-4">
+<h2 class="font-headline font-bold text-xl tracking-tight">Impact Terrain</h2>
+<div class="relative bg-surface-container-high rounded-2xl overflow-hidden aspect-[4/3] group">
+<div class="grid grid-cols-2 h-full relative">
+<div class="relative overflow-hidden group">
+<img alt="Before Reforestation" class="w-full h-full object-cover grayscale brightness-50" data-alt="arid deforested landscape in cameroon dry cracked earth under harsh sunlight desolate environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTbGaEWSy_B0H6WCIIAs1afF2Zjjn-NP4ebYMRKoJr0oxdzAhf2QOq4Ddcer2-psTqnwSSNZMfYaYKMpr3uqmumMMh0eJ5x95_pN7HcEkbc2-FYdXExGhl8Vd6JkKRsbV9DP2GpklLV-M5blM0rxrxFegPWGAWBZYN9zwwP_Z2tzrIEfUwkdlUYWPsruS1P2KCX88HD8eUo1mMjCW_EA9rdSxuMEk_15Jkf3yU45ZzYS0IWFMyy0H96EqHBOzjVgv4gRVy6UWpXLA"/>
+<div class="absolute bottom-4 left-4">
+<span class="bg-black/50 backdrop-blur-md text-white text-[10px] px-2 py-1 rounded-full border border-white/20">AVANT (2022)</span>
+</div>
+</div>
+<div class="relative overflow-hidden group">
+<img alt="After Reforestation" class="w-full h-full object-cover" data-alt="lush young forest reforestation project in cameroon vibrant green seedlings and tall trees golden hour lighting hopeful atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFuX0NvSMWp4WYEggu0PjxVGnr6uSLBY7zRo3up_vK1Xm7MZtSC2wFytEx0lrr77jioMmIfGqAO9CGiyyxL_Gw_HfsYvHXuGB8BAxDg_iRupKC09Q86sRpuC7zdOkkFh_V5p_Xp9xtcm_RBHLIS8Mp-6mSrA7ruD6B9IG2p6JvTNiBmcGfD9ddA1dtwzElIavdkNBPKmmP1FN5_4gQNM1O5mNs1VOLySZug0V-ODF2qb_39CbEsjzetxf7B5ydn_Q6lqQs232uwkU"/>
+<div class="absolute bottom-4 right-4">
+<span class="bg-primary text-on-primary text-[10px] px-2 py-1 rounded-full font-bold">APRÈS (2024)</span>
+</div>
+</div>
+<!-- Slider Handle Mockup -->
+<div class="absolute inset-y-0 left-1/2 w-0.5 bg-primary/50 backdrop-blur-sm z-10 flex items-center justify-center">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-on-primary text-sm" data-icon="unfold_more">unfold_more</span>
+</div>
+</div>
+</div>
+<div class="absolute top-4 left-4 right-4 bg-surface-container-lowest/60 backdrop-blur-sm p-3 rounded-xl border border-white/5">
+<p class="text-xs font-bold text-on-surface">Site Alpha - Bamenda</p>
+<p class="text-[10px] text-on-surface-variant">+85% Couverture Végétale</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 pb-safe px-4 bg-[#021c3a] rounded-t-2xl shadow-[0_-8px_24px_rgba(0,0,0,0.4)]">
+<button class="flex flex-col items-center justify-center text-[#81d4d8] bg-[#0d7377]/20 rounded-xl px-4 py-1 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-['Inter'] font-medium text-[11px] uppercase tracking-[0.05em] mt-1">Dashboard</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 px-4 py-1 hover:text-white transition-all active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-['Inter'] font-medium text-[11px] uppercase tracking-[0.05em] mt-1">Map</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 px-4 py-1 hover:text-white transition-all active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="Assessment">assessment</span>
+<span class="font-['Inter'] font-medium text-[11px] uppercase tracking-[0.05em] mt-1">Reports</span>
+</button>
+</nav>
+</body></html>
