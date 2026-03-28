@@ -4,88 +4,60 @@
 
 :root {
   font-family: 'Inter', system-ui, sans-serif;
-  background-color: #00132d;
-  color: #d5e3ff;
+  background-color: #0A2342; /* Deep Navy officiel */
+  color: #F8FAFC;
 }
 
 html, body {
   margin: 0;
   min-height: 100vh;
-  background-color: #00132d;
+  background-color: #0A2342;
   overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Glassmorphism Core */
+/* Couleurs de la Charte AirWatch */
 @layer components {
+  .bg-deep-navy { background-color: #0A2342; }
+  .text-teal-vif { color: #0D7377; }
+  .bg-teal-vif { background-color: #0D7377; }
+  
+  /* Glassmorphism selon Charte (Fonds Blanc Pur #F8FAFC à faible opacité) */
   .glass-card {
-    @apply bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3)];
+    @apply bg-[#F8FAFC]/[0.05] backdrop-blur-2xl border border-white/10 shadow-2xl;
   }
   
   .glass-panel {
-    @apply bg-[#021c3a]/60 backdrop-blur-3xl border-white/5 shadow-2xl;
+    @apply bg-[#0A2342]/80 backdrop-blur-3xl border-t border-white/5;
   }
 
-  .glass-button {
-    @apply bg-white/[0.05] backdrop-blur-md border border-white/10 hover:bg-white/[0.12] transition-all active:scale-95;
+  /* Typographie de la Charte */
+  .text-aqi-value {
+    @apply font-bold tracking-tighter; /* Inter Bold 72px+ */
   }
-
-  .text-editorial {
-    @apply font-black uppercase italic tracking-tighter;
+  
+  .text-technical {
+    font-family: 'JetBrains Mono', monospace;
+    @apply text-sm font-normal;
   }
 }
 
-/* Animations */
-.aqi-sphere {
-  position: relative;
-  transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+/* Animations d'ouverture */
+.animate-page-reveal {
+  animation: page-reveal 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-.aqi-pulse-red {
-  animation: pulse-red 2s infinite;
-}
-
-@keyframes pulse-red {
-  0% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
-  70% { transform: scale(1); box-shadow: 0 0 40px 20px rgba(220, 38, 38, 0); }
-  100% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
-}
-
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-/* Page Opening Animations */
 @keyframes page-reveal {
-  0% { opacity: 0; filter: blur(20px); transform: scale(1.05); }
-  100% { opacity: 1; filter: blur(0); transform: scale(1); }
-}
-
-@keyframes content-slide-up {
-  0% { opacity: 0; transform: translateY(30px); }
+  0% { opacity: 0; transform: translateY(10px); }
   100% { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes title-shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
+.aqi-pulse-red {
+  animation: aqi-red-pulse 2s infinite;
 }
 
-.animate-page-reveal {
-  animation: page-reveal 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-
-.animate-content-entrance {
-  opacity: 0;
-  animation: content-slide-up 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-
-.delay-100 { animation-delay: 100ms; }
-.delay-200 { animation-delay: 200ms; }
-.delay-300 { animation-delay: 300ms; }
-.delay-500 { animation-delay: 500ms; }
-
-/* Enhanced Map Saturate */
-.leaflet-container {
-  filter: saturate(1.4) brightness(0.7) contrast(1.1);
-  transition: filter 2s ease;
+@keyframes aqi-red-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+  70% { box-shadow: 0 0 0 20px rgba(220, 38, 38, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
 }

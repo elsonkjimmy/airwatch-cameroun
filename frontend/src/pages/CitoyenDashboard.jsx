@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import useStore from '../store/useStore';
 
 const CAMEROON_CITIES = [
@@ -6,27 +8,20 @@ const CAMEROON_CITIES = [
   { id: 'yaounde', name: 'Yaoundé', region: 'Centre', baseAqi: 92, lat: 3.8480, lon: 11.5192 },
   { id: 'douala', name: 'Douala', region: 'Littoral', baseAqi: 145, lat: 4.0511, lon: 9.7679 },
   { id: 'garoua', name: 'Garoua', region: 'Nord', baseAqi: 110, lat: 9.3019, lon: 13.3977 },
-  { id: 'bamenda', name: 'Bamenda', region: 'Nord-Ouest', baseAqi: 75, lat: 5.9631, lon: 10.1591 },
-  { id: 'bafoussam', name: 'Bafoussam', region: 'Ouest', baseAqi: 105, lat: 5.4777, lon: 10.4176 },
-  { id: 'ngaoundere', name: 'Ngaoundéré', region: 'Adamaoua', baseAqi: 85, lat: 7.3277, lon: 13.5847 },
-  { id: 'kribi', name: 'Kribi', region: 'Sud', baseAqi: 40, lat: 2.9506, lon: 9.9077 },
-  { id: 'limbe', name: 'Limbé', region: 'Sud-Ouest', baseAqi: 55, lat: 4.0131, lon: 9.2203 },
 ];
 
 const PROFILES = {
-  parent: { id: 'parent', label: "Parent", icon: "family_restroom", advice: { good: { icon: 'check_circle', color: 'text-[#14A44D]', text: "L'air est pur, profitez de l'extérieur avec vos enfants." }, moderate: { icon: 'info', color: 'text-[#EAB308]', text: "Qualité acceptable, soyez attentifs si vos enfants sont sensibles." }, orange: { icon: 'warning', color: 'text-[#F97316]', text: "Limitez le temps dehors des enfants après l'école" }, red: { icon: 'error', color: 'text-[#DC2626]', text: "Gardez les enfants à la maison, fermez les fenêtres" } } },
-  sportif: { id: 'sportif', label: "Sportif", icon: "directions_run", advice: { good: { icon: 'check_circle', color: 'text-[#14A44D]', text: "Conditions idéales pour votre entraînement en extérieur." }, moderate: { icon: 'info', color: 'text-[#EAB308]', text: "Bon pour le sport, mais évitez les zones à fort trafic." }, orange: { icon: 'warning', color: 'text-[#F97316]', text: "Préférez un sport en salle aujourd'hui" }, red: { icon: 'error', color: 'text-[#DC2626]', text: "Annulez votre séance — risque respiratoire élevé" } } },
-  asthmatique: { id: 'asthmatique', label: "Asthmatique", icon: "pulmonology", advice: { good: { icon: 'check_circle', color: 'text-[#14A44D]', text: "Bonne qualité d'air, respirez tranquillement." }, moderate: { icon: 'info', color: 'text-[#EAB308]', text: "Gardez votre traitement habituel à proximité par précaution." }, orange: { icon: 'warning', color: 'text-[#F97316]', text: "Ayez votre inhalateur à portée de main" }, red: { icon: 'error', color: 'text-[#DC2626]', text: "Restez à l'intérieur, prenez votre traitement préventif" } } },
-  agriculteur: { id: 'agriculteur', label: "Agriculteur", icon: "agriculture", advice: { good: { icon: 'check_circle', color: 'text-[#14A44D]', text: "Excellentes conditions pour le travail aux champs." }, moderate: { icon: 'info', color: 'text-[#EAB308]', text: "Conditions normales, restez hydraté." }, orange: { icon: 'warning', color: 'text-[#F97316]', text: "Évitez de brûler des résidus cette semaine" }, red: { icon: 'error', color: 'text-[#DC2626]', text: "Suspendez tout brûlage — risque d'aggravation critique" } } },
-  travailleur: { id: 'travailleur', label: "Travailleur", icon: "construction", advice: { good: { icon: 'check_circle', color: 'text-[#14A44D]', text: "Conditions de travail en extérieur optimales." }, moderate: { icon: 'info', color: 'text-[#EAB308]', text: "Faites des pauses régulières à l'ombre." }, orange: { icon: 'warning', color: 'text-[#F97316]', text: "Portez un masque si vous travaillez dehors" }, red: { icon: 'error', color: 'text-[#DC2626]', text: "Demandez à votre employeur une protection ou un arrêt" } } },
-  autre: { id: 'autre', label: "Autre Profil", icon: "diversity_3", advice: { good: { icon: 'check_circle', color: 'text-[#14A44D]', text: "Qualité de l'air idéale pour tout le monde." }, moderate: { icon: 'info', color: 'text-[#EAB308]', text: "Air acceptable, pas de précautions majeures." }, orange: { icon: 'warning', color: 'text-[#F97316]', text: "Réduisez les activités physiques prolongées" }, red: { icon: 'error', color: 'text-[#DC2626]', text: "Restez à l'intérieur autant que possible" } } }
+  parent: { id: 'parent', label: "Parent", icon: "family_restroom", advice: { good: "Air pur. Vos enfants peuvent jouer dehors.", moderate: "Air correct. Surveillez les plus fragiles.", orange: "Pollution. Évitez les jeux extérieurs.", red: "DANGER. Gardez les enfants à l'intérieur." } },
+  sportif: { id: 'sportif', label: "Sportif", icon: "directions_run", advice: { good: "Conditions parfaites pour s'entraîner.", moderate: "Air moyen. Évitez les grands axes.", orange: "Pollution. Préférez le sport en salle.", red: "ALERTE. Aucun effort physique intense." } },
+  asthmatique: { id: 'asthmatique', label: "Sensible", icon: "pulmonology", advice: { good: "Respiration facile. Profitez.", moderate: "Vigilance avec votre traitement.", orange: "Difficultés possibles. Inhalateur requis.", red: "URGENCE. Restez au calme absolu." } },
+  autre: { id: 'autre', label: "Standard", icon: "diversity_3", advice: { good: "Journée idéale pour tout le monde.", moderate: "Qualité acceptable pour tous.", orange: "Pollution modérée. Sorties brèves.", red: "Santé menacée. Portez un masque." } }
 };
 
-const getAqiStatus = (aqi) => {
-  if (aqi <= 50) return { level: 'good', color: '#14A44D', rgb: '20, 164, 77', label: 'PUR', desc: 'Air excellent', glow: 'shadow-[0_0_50px_rgba(20,164,77,0.3)]' };
-  if (aqi <= 100) return { level: 'moderate', color: '#EAB308', rgb: '234, 179, 8', label: 'MODÉRÉ', desc: 'Acceptable', glow: 'shadow-[0_0_60px_rgba(234,179,8,0.25)]' };
-  if (aqi <= 150) return { level: 'orange', color: '#F97316', rgb: '249, 115, 22', label: 'MAUVAIS', desc: 'Sensibles à risque', glow: 'shadow-[0_0_70px_rgba(249,115,22,0.3)]', isPulsing: true };
-  return { level: 'red', color: '#DC2626', rgb: '220, 38, 38', label: 'CRITIQUE', desc: 'Danger immédiat', glow: 'shadow-[0_0_100px_rgba(220,38,38,0.4)]', isPulsing: true, isCritical: true };
+const getAqiConfig = (aqi) => {
+  if (aqi <= 50) return { level: 'good', color: '#14A44D', rgb: '20, 164, 77', label: 'EXCELLENT', msg: 'Respirez librement', action: 'Sortie conseillée' };
+  if (aqi <= 100) return { level: 'moderate', color: '#EAB308', rgb: '234, 179, 8', label: 'MODÉRÉ', msg: 'Air un peu chargé', action: 'Prudence modérée' };
+  if (aqi <= 150) return { level: 'orange', color: '#F97316', rgb: '249, 115, 22', label: 'ALERTE', msg: 'Qualité mauvaise', action: 'Portez un masque' };
+  return { level: 'red', color: '#DC2626', rgb: '220, 38, 38', label: 'CRITIQUE', msg: 'DANGER SANTÉ', action: 'RESTEZ À L\'INTÉRIEUR', isPulsing: true };
 };
 
 const getWeekWindow = () => {
@@ -41,218 +36,190 @@ const getWeekWindow = () => {
   return days;
 };
 
-const calculateDistance = (lat1, lon1, lat2, lon2) => Math.sqrt(Math.pow(lat2 - lat1, 2) + Math.pow(lon2 - lon1, 2));
+const HOURLY_MOCK_DATA = [{ time: '00h', aqi: 85 }, { time: '06h', aqi: 165 }, { time: '12h', aqi: 140 }, { time: '18h', aqi: 95 }, { time: '23h', aqi: 80 }];
 
 function CitoyenDashboard() {
-  const { 
-    currentAQI, currentVille, profileType, setProfileType, setCurrentVille, setCurrentAQI,
-    showCityPicker, setShowCityPicker, showProfilePicker, setShowProfilePicker,
-    showReportingModal, setShowReportingModal
-  } = useStore();
-  
+  const { currentAQI, currentVille, profileType, setProfileType, setCurrentVille, setCurrentAQI, showCityPicker, setShowCityPicker, showProfilePicker, setShowProfilePicker, showReportingModal, setShowReportingModal } = useStore();
   const [selectedDayIndex, setSelectedDayIndex] = useState(2);
-  const [isDetecting, setIsDetecting] = useState(false);
   const scrollRef = useRef(null);
   const days = getWeekWindow();
 
-  const detectLocation = () => {
-    if (!("geolocation" in navigator)) return;
-    setIsDetecting(true);
-    navigator.geolocation.getCurrentPosition((position) => {
-      const { latitude, longitude } = position.coords;
-      let closestCity = CAMEROON_CITIES[0];
-      let minDistance = calculateDistance(latitude, longitude, closestCity.lat, closestCity.lon);
-      CAMEROON_CITIES.forEach(city => {
-        const dist = calculateDistance(latitude, longitude, city.lat, city.lon);
-        if (dist < minDistance) { minDistance = dist; closestCity = city; }
-      });
-      setCurrentVille(closestCity.name);
-      setCurrentAQI(closestCity.baseAqi);
-      setIsDetecting(false);
-    }, () => setIsDetecting(false));
-  };
-
-  useEffect(() => {
-    if (!currentVille || currentVille === 'Maroua') detectLocation();
-    if (scrollRef.current) setTimeout(() => {
-      scrollRef.current.children[2]?.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
-    }, 100);
-  }, []);
-
-  const handleScroll = () => {
-    if (!scrollRef.current) return;
-    const scrollLeft = scrollRef.current.scrollLeft;
-    const newIndex = Math.round(scrollLeft / 84);
-    const clampedIndex = Math.max(0, Math.min(days.length - 1, newIndex));
-    if (clampedIndex !== selectedDayIndex) setSelectedDayIndex(clampedIndex);
-  };
-
   const displayAQI = Math.round(currentAQI * [0.7, 0.9, 1, 0.85, 1.2, 0.95, 1.1][selectedDayIndex]);
-  const status = getAqiStatus(displayAQI);
-  const currentProfile = PROFILES[profileType] || PROFILES.parent;
-  const genericAdvices = {
-    good: [{ icon: 'air', color: 'text-[#14A44D]', text: "Ouvrez les fenêtres pour aérer" }],
-    moderate: [{ icon: 'air', color: 'text-[#EAB308]', text: "Aération recommandée brève" }],
-    orange: [{ icon: 'window', color: 'text-[#81d4d8]', text: 'Gardez les fenêtres fermées' }, { icon: 'masks', color: 'text-[#81d4d8]', text: "Portez un masque dehors" }],
-    red: [{ icon: 'window', color: 'text-[#DC2626]', text: 'Fermeture stricte des fenêtres' }, { icon: 'masks', color: 'text-[#DC2626]', text: "Masque FFP2 fortement recommandé" }]
-  };
-  const adviceItems = [{ ...currentProfile.advice[status.level], isMain: true }, ...genericAdvices[status.level]];
+  const status = getAqiConfig(displayAQI);
+  const currentAdvice = PROFILES[profileType]?.advice[status.level] || PROFILES.autre.advice[status.level];
+
+  const pollutants = [
+    { name: 'PM2.5', val: Math.round(displayAQI * 0.6), unit: 'µg/m³', status: status.level === 'red' ? 'DANGER' : 'SAIN' },
+    { name: 'NO₂', val: 12.4, unit: 'ppb', status: 'SAIN' },
+    { name: 'CO₂', val: 412, unit: 'ppm', status: 'SAIN' },
+  ];
 
   return (
-    <div className="relative min-h-screen pt-20 px-4 select-none lg:pt-24 lg:flex lg:justify-center animate-page-reveal">
+    <div className="relative min-h-screen bg-deep-navy text-slate-50 select-none lg:flex lg:justify-center animate-page-reveal overflow-x-hidden">
+      
+      <style>{`
+        .no-scrollbar::-webkit-scrollbar { display: none !important; }
+        .no-scrollbar { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+        @keyframes wave { 0% { transform: translateX(-50%) skewY(-5deg); } 50% { transform: translateX(-30%) skewY(5deg); } 100% { transform: translateX(-50%) skewY(-5deg); } }
+        .liquid-wave { animation: wave 10s infinite linear; opacity: 0.2; }
+      `}</style>
+
       <div className="fixed top-1/4 left-1/2 -translate-x-1/2 w-full h-[500px] blur-[120px] opacity-20 pointer-events-none transition-all duration-1000" style={{ background: `radial-gradient(circle, ${status.color} 0%, transparent 70%)` }} />
 
       {/* HEADER */}
-      <header className="fixed top-0 left-0 right-0 z-[60] h-20 flex items-center justify-between px-6 bg-gradient-to-b from-[#00132d] to-transparent pointer-events-none lg:px-12 animate-content-entrance">
-        <button onClick={() => setShowCityPicker(true)} className="flex flex-col pointer-events-auto text-left group">
-          <div className="flex items-center gap-1.5 opacity-60"><span className={`material-symbols-outlined text-[14px] ${isDetecting ? 'animate-spin' : ''}`}>location_on</span><span className="text-[10px] font-black uppercase tracking-widest leading-none">{isDetecting ? 'Localisation...' : 'Cameroun • Live'}</span><span className="material-symbols-outlined text-[12px]">expand_more</span></div>
-          <h1 className="text-2xl font-black tracking-tighter text-[#81d4d8] leading-none mt-1 uppercase italic lg:text-3xl">{currentVille}</h1>
+      <header className="fixed top-0 left-0 right-0 z-[60] h-20 px-6 flex items-center justify-between glass-panel lg:px-12 animate-content-entrance">
+        <button onClick={() => setShowCityPicker(true)} className="flex flex-col text-left group">
+          <p className="text-[10px] font-bold text-teal-vif tracking-widest uppercase leading-none">AirWatch Cameroun</p>
+          <h1 className="text-xl font-bold flex items-center gap-2 lg:text-2xl mt-1">{currentVille} <span className="material-symbols-outlined text-sm">expand_more</span></h1>
         </button>
-        <button onClick={() => setShowProfilePicker(true)} className="h-10 w-10 glass-button rounded-full flex items-center justify-center pointer-events-auto lg:h-12 lg:w-12 transition-transform hover:scale-110 active:scale-90">
-          <span className="material-symbols-outlined text-sm lg:text-base">{currentProfile.icon}</span>
+        <button onClick={() => setShowProfilePicker(true)} className="h-10 w-10 glass-button rounded-full flex items-center justify-center transition-transform hover:scale-110 active:scale-90 shadow-xl">
+          <span className="material-symbols-outlined text-teal-vif">{PROFILES[profileType]?.icon}</span>
         </button>
       </header>
 
-      {/* CORE CONTENT */}
-      <main className="w-full max-w-[450px] mx-auto space-y-12 pb-32 relative z-10 lg:max-w-6xl lg:grid lg:grid-cols-12 lg:gap-16 lg:items-start lg:px-8">
+      {/* MAIN CONTENT */}
+      <main className="w-full max-w-lg mx-auto pt-28 pb-32 space-y-12 relative z-10 lg:max-w-6xl lg:grid lg:grid-cols-12 lg:gap-16 lg:items-start lg:px-8">
         
-        {/* COLONNE GAUCHE (SPHÈRE AQI) */}
-        <section className="flex flex-col items-center justify-center py-6 lg:col-span-5 lg:sticky lg:top-32 lg:py-0 animate-content-entrance delay-100">
-          <div className="relative group cursor-default">
-            <div className={`absolute inset-0 rounded-full border border-white/5 scale-125 transition-all duration-1000 ${status.isPulsing ? 'animate-pulse' : ''}`} />
-            <div className={`aqi-sphere h-72 w-72 rounded-full flex flex-col items-center justify-center border border-white/10 lg:h-96 lg:w-96 ${status.glow} ${status.isCritical ? 'aqi-pulse-red' : ''}`} style={{ background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at center, rgba(${status.rgb}, 0.2) 0%, transparent 70%)`, boxShadow: `inset 0 0 40px rgba(${status.rgb}, 0.2)` }}>
-              <div className="flex flex-col items-center text-center">
-                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/30 mb-1 lg:text-[11px]">Atmospheric Index</span>
-                <span className="text-[100px] font-black tracking-tighter text-white leading-none transition-all duration-500 lg:text-[140px]">{displayAQI}</span>
-                <div className="mt-4 px-6 py-1.5 rounded-full border border-white/10 backdrop-blur-md flex items-center gap-2 lg:mt-8 lg:px-8" style={{ backgroundColor: `rgba(${status.rgb}, 0.1)` }}>
-                  <div className={`h-1.5 w-1.5 rounded-full ${status.isPulsing ? 'animate-ping' : ''}`} style={{ backgroundColor: status.color }} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] lg:text-[12px]" style={{ color: status.color }}>{status.label}</span>
-                </div>
+        {/* COLONNE GAUCHE (AQI) */}
+        <section className="flex flex-col items-center lg:col-span-5 lg:sticky lg:top-32 animate-content-entrance">
+          <div className="relative group overflow-visible">
+            <svg className="absolute inset-0 w-full h-full -rotate-90 scale-[1.15]" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="45" fill="none" stroke="white" strokeOpacity="0.05" strokeWidth="1" />
+              <circle cx="50" cy="50" r="45" fill="none" stroke={status.color} strokeWidth="3" strokeDasharray="282.7" strokeDashoffset={282.7 - (282.7 * Math.min(displayAQI, 300)) / 300} strokeLinecap="round" className="transition-all duration-1000 ease-out opacity-40" />
+            </svg>
+            <div 
+              className={`h-72 w-72 lg:h-96 lg:w-96 rounded-full border-4 border-white/5 flex flex-col items-center justify-center relative shadow-2xl transition-all duration-700 overflow-hidden ${status.isPulsing ? 'aqi-pulse-red' : ''}`}
+              style={{ backgroundColor: `${status.color}11`, borderColor: `${status.color}22` }}
+            >
+              <div className="absolute inset-0 pointer-events-none"><div className="liquid-wave absolute bottom-0 left-0 w-[200%] h-full transition-all duration-1000" style={{ backgroundColor: status.color, transform: `translateY(${100 - (displayAQI / 300) * 100}%)`, borderRadius: '40% 45% 42% 38%' }} /></div>
+              <div className="relative z-10 flex flex-col items-center">
+                <span className="text-[10px] font-black uppercase text-white/30 mb-2 tracking-[0.3em]">Qualité de l'Air</span>
+                <span className="text-[110px] lg:text-[150px] font-bold tracking-tighter text-white leading-none drop-shadow-xl">{displayAQI}</span>
+                <div className="mt-4 px-6 py-2 rounded-full backdrop-blur-xl border border-white/20 shadow-2xl" style={{ backgroundColor: status.color }}><span className="text-xs font-black uppercase text-[#001a3d]">{status.msg}</span></div>
               </div>
             </div>
           </div>
-          <p className="mt-12 text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 opacity-60 text-center italic max-w-[200px] lg:max-w-none lg:text-[13px]">"{status.desc}"</p>
+          <div className="mt-12 text-center space-y-4 w-full px-4">
+            <div className="glass-card rounded-[32px] p-8 border-t-4 shadow-2xl" style={{ borderTopColor: status.color }}>
+              <h3 className="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 italic">Recommandation Immédiate</h3>
+              <p className="text-xl font-bold italic uppercase text-white tracking-tight leading-tight">{status.action}</p>
+              <p className="text-sm text-slate-400 font-medium mt-4 leading-relaxed italic opacity-80">"{currentAdvice}"</p>
+            </div>
+          </div>
         </section>
 
         {/* COLONNE DROITE */}
-        <div className="lg:col-span-7 space-y-12 animate-content-entrance delay-300">
+        <div className="lg:col-span-7 space-y-16 animate-content-entrance delay-200">
           
-          {/* SÉLECTEUR DE JOUR */}
-          <section className="space-y-2 relative overflow-hidden py-2">
-            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 opacity-60 ml-6 lg:ml-2">Historique & Prévisions</h2>
-            <div ref={scrollRef} onScroll={handleScroll} className="flex gap-1 overflow-x-auto no-scrollbar snap-x snap-mandatory px-[calc(50%-40px)] lg:px-2 scroll-smooth pointer-events-auto py-6 lg:justify-start lg:snap-none">
-              {days.map((day) => {
-                const isSelected = selectedDayIndex === day.index;
-                return (
-                  <div key={day.index} onClick={() => { setSelectedDayIndex(day.index); scrollRef.current.children[day.index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); }} className={`flex-shrink-0 w-20 h-24 flex items-center justify-center snap-center transition-all duration-500 cursor-pointer ${isSelected ? 'scale-125 z-20' : 'scale-90 z-10 lg:scale-100 lg:opacity-40'}`}>
-                    <div className={`w-16 h-20 rounded-[24px] flex flex-col items-center justify-center border transition-all duration-500 ${isSelected ? 'glass-card border-[#81d4d8]/50 bg-[#81d4d8]/20 text-[#81d4d8] shadow-2xl' : 'border-white/5 bg-white/5 text-slate-500 hover:opacity-100'}`}>
-                      <span className="text-[9px] font-black uppercase tracking-widest">{day.dayName}</span>
-                      <span className="text-xl font-black italic mt-1">{day.dateNum}</span>
-                    </div>
-                  </div>
-                );
-              })}
+          {/* SÉLECTEUR DE JOUR : FIXÉ ET CENTRÉ VERTICALEMENT */}
+          <section className="space-y-4 relative">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 opacity-60 ml-6">Historique & Prévisions</h2>
+            <div className="relative py-12 px-2"> {/* py-12 constant pour PC et Mobile */}
+              <div ref={scrollRef} className="flex gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory px-10 lg:px-4 lg:justify-start lg:snap-none">
+                {days.map((day) => (
+                  <button key={day.index} onClick={() => setSelectedDayIndex(day.index)} className={`flex-shrink-0 w-16 h-20 rounded-2xl border transition-all duration-500 snap-center ${selectedDayIndex === day.index ? 'bg-teal-vif text-[#001a3d] font-bold border-transparent scale-125 lg:scale-110 shadow-[0_15px_40px_rgba(13,115,119,0.5)] z-10 mx-2' : 'bg-white/5 border-white/5 text-slate-500 scale-90 opacity-40'}`}>
+                    <span className="text-[9px] block uppercase leading-none">{day.dayName}</span>
+                    <span className="text-xl block italic mt-1 font-black">{day.dateNum}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </section>
 
-          {/* CONSEILS */}
-          <section className="space-y-6 px-4 lg:px-0 animate-content-entrance delay-500">
-            <div className="flex items-center justify-between"><h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 opacity-60">Atmospheric Advice</h2><div className="px-4 py-1.5 glass-card rounded-full text-[9px] font-black uppercase text-[#81d4d8] italic tracking-widest border-white/10">{currentProfile.label}</div></div>
-            <div className="glass-card rounded-[40px] p-10 space-y-10 relative overflow-hidden group border-white/10 lg:p-12">
-              <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-125 transition-all duration-1000"><span className="material-symbols-outlined text-[120px]">{currentProfile.icon}</span></div>
-              <div className="flex flex-col gap-10 relative z-10">
-                {adviceItems.map((item, idx) => (
-                  <div className="flex items-start gap-8" key={idx}>
-                    <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-white/10 border border-white/10 shadow-xl lg:h-16 lg:w-16"><span className={`material-symbols-outlined text-3xl lg:text-4xl ${item.color} filled`}>{item.icon}</span></div>
-                    <div className="space-y-2"><p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#81d4d8] opacity-80">Action Prioritaire</p><p className="text-[15px] leading-relaxed font-bold text-white italic lg:text-lg">{item.text}</p></div>
-                  </div>
-                ))}
-              </div>
+          {/* PARAMÈTRES */}
+          <section className="space-y-4">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 opacity-60 ml-6">Analyse des Particules</h2>
+            <div className="grid grid-cols-3 gap-3 px-4">
+              {pollutants.map((p, i) => (
+                <div key={i} className="glass-card p-5 rounded-[28px] text-center space-y-2 border-white/5 hover:bg-white/[0.1] transition-all">
+                  <p className="text-[9px] font-black text-slate-500 uppercase">{p.name}</p>
+                  <p className="text-2xl font-bold text-white text-technical">{p.val}</p>
+                  <p className={`text-[8px] font-black uppercase ${p.status === 'DANGER' ? 'text-error animate-pulse' : 'text-[#14A44D]'}`}>{p.status}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* GRAPHIQUE */}
+          <section className="space-y-4 px-4 pb-10">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 opacity-60">Tendance 24h</h2>
+            <div className="glass-card rounded-[40px] p-8 h-64 w-full border-white/5 shadow-2xl">
+              <ResponsiveContainer width="100%" height="100%"><AreaChart data={HOURLY_MOCK_DATA}><defs><linearGradient id="colorAqi" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={status.color} stopOpacity={0.3}/><stop offset="95%" stopColor={status.color} stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} /><XAxis dataKey="time" axisLine={false} tickLine={false} tick={{fill: 'rgba(255,255,255,0.3)', fontSize: 10}} /><Tooltip contentStyle={{ backgroundColor: '#0A2342', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }} /><Area type="monotone" dataKey="aqi" stroke={status.color} strokeWidth={3} fill="url(#colorAqi)" /></AreaChart></ResponsiveContainer>
             </div>
           </section>
 
         </div>
       </main>
 
-      {/* MODALS ... */}
-      {showCityPicker && <CityPickerModal />}
-      {showProfilePicker && <ProfilePickerModal />}
-      {showReportingModal && <ReportingModal />}
+      {/* MODALS : PORTAL STYLE */}
+      {showCityPicker && <PortalModal title="Villes" onClose={() => setShowCityPicker(false)}><CityPickerContent /></PortalModal>}
+      {showProfilePicker && <PortalModal title="Votre Profil" onClose={() => setShowProfilePicker(false)}><ProfilePickerContent /></PortalModal>}
+      {showReportingModal && <PortalModal title="Signaler" onClose={() => setShowReportingModal(false)}><ReportingContent /></PortalModal>}
     </div>
   );
 }
 
-// Sous-composants Modals
-const CityPickerModal = () => {
+// PORTAL MODAL (FIXED POSITIONING)
+const PortalModal = ({ title, children, onClose }) => {
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = 'unset'; };
+  }, []);
+
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center px-6 animate-page-reveal">
+      <div className="absolute inset-0 bg-[#0A2342]/95 backdrop-blur-2xl" onClick={onClose} />
+      <div className="w-full max-w-[380px] glass-card rounded-[48px] p-10 relative z-[10000] shadow-[0_30px_100px_rgba(0,0,0,0.8)] border-white/20 flex flex-col max-h-[85vh]" style={{ overscrollBehavior: 'contain' }}>
+        <button onClick={onClose} className="absolute top-8 right-8 h-10 w-10 glass-button rounded-full flex items-center justify-center z-[10001] border-white/10 hover:bg-white/10">
+          <span className="material-symbols-outlined text-sm text-white">close</span>
+        </button>
+        <h3 className="text-2xl font-bold text-white uppercase italic tracking-tighter mb-8 shrink-0">{title}</h3>
+        <div className="relative overflow-y-auto no-scrollbar flex-1 pr-1">
+          {children}
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+};
+
+// Contents
+const CityPickerContent = () => {
   const { currentVille, setCurrentVille, setCurrentAQI, setShowCityPicker } = useStore();
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center px-6 backdrop-blur-2xl bg-[#00132d]/60 animate-page-reveal">
-      <div className="w-full max-w-[350px] glass-card rounded-[40px] p-8 space-y-6 border-white/10 pointer-events-auto">
-        <div className="flex justify-between items-center"><h3 className="text-xl font-black text-white italic uppercase tracking-tighter">Villes</h3><button onClick={() => setShowCityPicker(false)} className="h-10 w-10 glass-button rounded-full flex items-center justify-center"><span className="material-symbols-outlined text-sm">close</span></button></div>
-        <div className="max-h-[300px] overflow-y-auto no-scrollbar space-y-2">
-          {CAMEROON_CITIES.map((city) => (
-            <button key={city.id} onClick={() => { setCurrentVille(city.name); setCurrentAQI(city.baseAqi); setShowCityPicker(false); }} className={`w-full p-5 rounded-3xl flex items-center justify-between transition-all ${currentVille === city.name ? 'bg-[#81d4d8]/20 border border-[#81d4d8]/30' : 'bg-white/5 border border-white/5'}`}>
-              <div><p className="text-sm font-black text-white uppercase italic">{city.name}</p><p className="text-[9px] text-slate-500 font-bold uppercase mt-1">{city.region}</p></div>
-              {currentVille === city.name && <span className="material-symbols-outlined text-[#81d4d8]">check_circle</span>}
-            </button>
-          ))}
-        </div>
-      </div>
+    <div className="space-y-3">
+      {CAMEROON_CITIES.map((city) => (
+        <button key={city.id} onClick={() => { setCurrentVille(city.name); setCurrentAQI(city.baseAqi); setShowCityPicker(false); }} className={`w-full p-5 rounded-[24px] flex items-center justify-between border transition-all ${currentVille === city.name ? 'bg-teal-vif border-transparent text-[#001a3d]' : 'bg-white/5 border-white/5 text-white hover:bg-white/10'}`}>
+          <span className="font-bold uppercase italic text-sm">{city.name}</span>
+          {currentVille === city.name && <span className="material-symbols-outlined text-sm">check_circle</span>}
+        </button>
+      ))}
     </div>
   );
 };
 
-const ProfilePickerModal = () => {
+const ProfilePickerContent = () => {
   const { profileType, setProfileType, setShowProfilePicker } = useStore();
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center px-6 backdrop-blur-2xl bg-[#00132d]/60 animate-page-reveal">
-      <div className="w-full max-w-[350px] glass-card rounded-[40px] p-8 space-y-6 border-white/10 pointer-events-auto">
-        <div className="flex justify-between items-center"><h3 className="text-xl font-black text-white italic uppercase tracking-tighter">Mon Profil</h3><button onClick={() => setShowProfilePicker(false)} className="h-10 w-10 glass-button rounded-full flex items-center justify-center"><span className="material-symbols-outlined text-sm">close</span></button></div>
-        <div className="space-y-3">
-          {Object.values(PROFILES).map((prof) => (
-            <button key={prof.id} onClick={() => setProfileType(prof.id)} className={`w-full p-5 rounded-3xl flex items-center gap-5 transition-all ${profileType === prof.id ? 'bg-[#81d4d8]/20 border border-[#81d4d8]/30' : 'bg-white/5 border border-white/5 hover:bg-white/10'}`}>
-              <div className={`h-12 w-12 rounded-2xl flex items-center justify-center ${profileType === prof.id ? 'bg-[#81d4d8] text-[#00132d]' : 'bg-white/10 text-white'}`}><span className="material-symbols-outlined">{prof.icon}</span></div>
-              <span className="text-sm font-black text-white uppercase italic tracking-tight">{prof.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
+    <div className="grid grid-cols-2 gap-4">
+      {Object.values(PROFILES).map((prof) => (
+        <button key={prof.id} onClick={() => { setProfileType(prof.id); setShowProfilePicker(false); }} className={`flex flex-col items-center justify-center p-6 rounded-[32px] border transition-all ${profileType === prof.id ? 'bg-teal-vif border-transparent text-[#001a3d] scale-105 shadow-xl' : 'bg-white/5 border-white/5 text-white hover:bg-white/10'}`}>
+          <span className="material-symbols-outlined text-2xl mb-3">{prof.icon}</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest">{prof.label}</span>
+        </button>
+      ))}
     </div>
   );
 };
 
-const ReportingModal = () => {
-  const { currentVille, currentAQI, setShowReportingModal } = useStore();
+const ReportingContent = () => {
+  const { setShowReportingModal, currentAQI } = useStore();
   const [isReporting, setIsReporting] = useState(false);
   const [reportResult, setReportResult] = useState(null);
-  const handleReport = () => { setIsReporting(true); setTimeout(() => { setReportResult({ aqi: currentAQI + 15, type_pollution: "Fumée de combustion", timestamp: "À l'instant" }); setIsReporting(false); }, 2000); };
-  return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center px-6 backdrop-blur-2xl bg-[#00132d]/40 animate-page-reveal">
-      <div className="w-full max-w-[350px] glass-card rounded-[40px] p-10 space-y-8 border-white/10 pointer-events-auto">
-        {!reportResult && !isReporting ? (
-          <div className="text-center space-y-8">
-            <div className="h-24 w-24 bg-[#81d4d8]/10 rounded-[32px] flex items-center justify-center mx-auto border border-[#81d4d8]/20 animate-pulse"><span className="material-symbols-outlined text-5xl text-[#81d4d8]">campaign</span></div>
-            <div className="space-y-2"><h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Signaler ?</h3><p className="text-xs text-slate-400 font-medium px-4">Votre position GPS sera analysée.</p></div>
-            <div className="flex gap-4"><button onClick={() => setShowReportingModal(false)} className="flex-1 py-5 glass-button rounded-3xl text-[10px] font-black uppercase">Annuler</button><button onClick={handleReport} className="flex-1 py-5 bg-[#81d4d8] text-[#00132d] rounded-3xl text-[10px] font-black uppercase shadow-lg">Confirmer</button></div>
-          </div>
-        ) : isReporting ? (
-          <div className="flex flex-col items-center py-12 space-y-10">
-            <div className="relative"><div className="h-32 w-32 rounded-full border border-dashed border-[#81d4d8]/40 animate-spin" /><span className="material-symbols-outlined absolute inset-0 flex items-center justify-center text-5xl text-[#81d4d8]">radar</span></div>
-            <h3 className="text-xl font-black text-white italic uppercase">Analyse IA...</h3>
-          </div>
-        ) : (
-          <div className="space-y-8">
-            <div className="flex justify-between items-center"><h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Rapport IA</h3><button onClick={() => { setReportResult(null); setShowReportingModal(false); }} className="h-10 w-10 glass-button rounded-full flex items-center justify-center"><span className="material-symbols-outlined text-sm">close</span></button></div>
-            <div className="flex items-center gap-6 bg-white/5 p-6 rounded-[32px] border border-white/5">
-              <div className="h-20 w-20 glass-card rounded-2xl flex flex-col items-center justify-center border-white/10"><span className="text-[10px] font-black text-slate-500 uppercase">AQI</span><span className="text-3xl font-black text-white italic">{reportResult.aqi}</span></div>
-              <div className="flex-1"><p className="text-sm font-black text-white uppercase italic leading-tight mb-1">{reportResult.type_pollution}</p><p className="text-[10px] text-slate-500 font-bold uppercase italic">{reportResult.timestamp}</p></div>
-            </div>
-            <button onClick={() => { setReportResult(null); setShowReportingModal(false); }} className="w-full py-5 bg-[#81d4d8] text-[#00132d] rounded-[28px] text-[11px] font-black uppercase shadow-xl">Terminer</button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+  const handleReport = () => { setIsReporting(true); setTimeout(() => { setReportResult({ aqi: currentAQI + 15, type_pollution: "Fumée", timestamp: "À l'instant" }); setIsReporting(false); }, 2000); };
+  if (isReporting) return <div className="flex flex-col items-center py-12 space-y-8"><div className="h-24 w-24 rounded-full border-4 border-dashed border-teal-vif animate-spin" /><h3 className="text-xl font-bold text-white uppercase italic tracking-tighter">Analyse IA...</h3></div>;
+  if (reportResult) return <div className="space-y-8 text-center"><div className="bg-white/5 p-6 rounded-3xl border border-white/5 flex items-center gap-6 text-left"><div className="h-16 w-16 glass-card rounded-xl flex flex-col justify-center items-center"><span className="text-[10px] font-bold opacity-40">AQI</span><span className="text-2xl font-bold">{reportResult.aqi}</span></div><div className="font-black uppercase italic text-sm">{reportResult.type_pollution}</div></div><button onClick={() => setShowReportingModal(false)} className="w-full py-5 bg-teal-vif text-[#001a3d] rounded-3xl text-[11px] font-bold uppercase shadow-xl shadow-teal-vif/20">Terminer</button></div>;
+  return <div className="text-center space-y-8 py-4"><div className="h-20 w-20 bg-teal-vif/10 rounded-full flex items-center justify-center mx-auto border border-teal-vif/20 animate-pulse"><span className="material-symbols-outlined text-4xl text-teal-vif">campaign</span></div><p className="text-xs text-slate-400 font-medium px-4 leading-relaxed">Souhaitez-vous signaler une pollution ? Votre position GPS sera analysée par l'IA.</p><div className="flex gap-4"><button onClick={() => setShowReportingModal(false)} className="flex-1 py-5 glass-button rounded-3xl text-[10px] font-black uppercase">Non</button><button onClick={handleReport} className="flex-1 py-5 bg-teal-vif text-[#001a3d] rounded-3xl text-[10px] font-bold uppercase shadow-lg shadow-teal-vif/20">Oui</button></div></div>;
 };
 
 export default CitoyenDashboard;
