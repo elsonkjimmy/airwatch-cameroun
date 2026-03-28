@@ -17,8 +17,8 @@ const Layout = () => {
   const getNavItems = () => {
     if (role === 'gouvernement') {
       return [
-        { icon: 'dashboard', label: 'Alertes', path: '/gouvernement' },
-        { icon: 'analytics', label: 'Données', path: '/gouvernement' },
+        { icon: 'dashboard', label: 'Alertes', action: () => scrollToSection('alerts-section'), path: '/gouvernement' },
+        { icon: 'analytics', label: 'Données', action: () => scrollToSection('data-section'), path: '/gouvernement' },
         { icon: 'logout', label: 'Quitter', action: logout, path: '/login' },
       ];
     }
@@ -64,11 +64,11 @@ const Layout = () => {
 
   return (
     <div className="min-h-screen text-[#d5e3ff] font-sans selection:bg-[#81d4d8]/30">
-      <main className="relative z-10 pb-24">
+      <main className="relative z-10 pb-0">
         <Outlet />
       </main>
 
-      <nav className="fixed bottom-0 left-0 w-full z-[100] px-4 pb-6 pt-2 pointer-events-none">
+      <nav className="fixed bottom-0 left-0 w-full z-[100] px-4 pb-3 pt-2 pointer-events-none">
         <div className="max-w-[450px] mx-auto h-20 glass-panel rounded-[32px] flex justify-around items-center px-4 pointer-events-auto border border-white/10">
           {navItems.map((item) => (
             <button

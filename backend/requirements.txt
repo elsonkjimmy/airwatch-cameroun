@@ -1,5 +1,6 @@
 fastapi
 uvicorn
+gunicorn
 supabase
 httpx
 python-dotenv
@@ -8,3 +9,4 @@ pydantic
 pydantic-settings
 python-multipart
 websockets
+twilio

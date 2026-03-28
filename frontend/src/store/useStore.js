@@ -8,6 +8,7 @@ const useStore = create(
       user: null,
       role: 'citoyen', 
       isAuthenticated: false,
+      assignedZone: null, // Pour les ONG : 'Littoral', 'Grand Nord', 'Centre', etc.
       
       // Profil Citoyen
       hasSelectedProfile: false,

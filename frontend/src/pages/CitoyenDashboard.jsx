@@ -28,27 +28,19 @@ const getAqiStatus = (aqi) => {
   return { level: 'red', color: '#DC2626', rgb: '220, 38, 38', label: 'CRITIQUE', desc: 'Danger immédiat', glow: 'shadow-[0_0_100px_rgba(220,38,38,0.4)]', isPulsing: true, isCritical: true };
 };
 
-// Fonction stable pour générer la semaine
 const getWeekWindow = () => {
   const days = [];
   const daysName = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
   const today = new Date();
-  
   for (let i = -2; i <= 4; i++) {
     const d = new Date(today);
     d.setDate(today.getDate() + i);
-    days.push({ 
-      index: i + 2, 
-      dayName: i === 0 ? "Auj." : i === -1 ? "Hier" : i === -2 ? "Av-h." : daysName[d.getDay()], 
-      dateNum: d.getDate() 
-    });
+    days.push({ index: i + 2, dayName: i === 0 ? "Auj." : i === -1 ? "Hier" : i === -2 ? "Av-h." : daysName[d.getDay()], dateNum: d.getDate() });
   }
   return days;
 };
 
-const calculateDistance = (lat1, lon1, lat2, lon2) => {
-  return Math.sqrt(Math.pow(lat2 - lat1, 2) + Math.pow(lon2 - lon1, 2));
-};
+const calculateDistance = (lat1, lon1, lat2, lon2) => Math.sqrt(Math.pow(lat2 - lat1, 2) + Math.pow(lon2 - lon1, 2));
 
 function CitoyenDashboard() {
   const { 
@@ -62,7 +54,6 @@ function CitoyenDashboard() {
   const scrollRef = useRef(null);
   const days = getWeekWindow();
 
-  // Détection manuelle et auto
   const detectLocation = () => {
     if (!("geolocation" in navigator)) return;
     setIsDetecting(true);
@@ -70,15 +61,10 @@ function CitoyenDashboard() {
       const { latitude, longitude } = position.coords;
       let closestCity = CAMEROON_CITIES[0];
       let minDistance = calculateDistance(latitude, longitude, closestCity.lat, closestCity.lon);
-
       CAMEROON_CITIES.forEach(city => {
         const dist = calculateDistance(latitude, longitude, city.lat, city.lon);
-        if (dist < minDistance) {
-          minDistance = dist;
-          closestCity = city;
-        }
+        if (dist < minDistance) { minDistance = dist; closestCity = city; }
       });
-
       setCurrentVille(closestCity.name);
       setCurrentAQI(closestCity.baseAqi);
       setIsDetecting(false);
@@ -86,120 +72,108 @@ function CitoyenDashboard() {
   };
 
   useEffect(() => {
-    // On ne détecte auto que si aucune ville n'est définie (premier lancement)
-    if (!currentVille || currentVille === 'Maroua') {
-      detectLocation();
-    }
-    // Centrage immédiat
-    if (scrollRef.current) {
-      setTimeout(() => {
-        scrollRef.current.children[2]?.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
-      }, 50);
-    }
+    if (!currentVille || currentVille === 'Maroua') detectLocation();
+    if (scrollRef.current) setTimeout(() => {
+      scrollRef.current.children[2]?.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
+    }, 100);
   }, []);
 
   const handleScroll = () => {
     if (!scrollRef.current) return;
     const scrollLeft = scrollRef.current.scrollLeft;
-    const itemWidth = 84; 
-    const newIndex = Math.round(scrollLeft / itemWidth);
+    const newIndex = Math.round(scrollLeft / 84);
     const clampedIndex = Math.max(0, Math.min(days.length - 1, newIndex));
-    if (clampedIndex !== selectedDayIndex) {
-      setSelectedDayIndex(clampedIndex);
-    }
+    if (clampedIndex !== selectedDayIndex) setSelectedDayIndex(clampedIndex);
   };
 
   const displayAQI = Math.round(currentAQI * [0.7, 0.9, 1, 0.85, 1.2, 0.95, 1.1][selectedDayIndex]);
   const status = getAqiStatus(displayAQI);
   const currentProfile = PROFILES[profileType] || PROFILES.parent;
-  const adviceItems = [{ ...currentProfile.advice[status.level], isMain: true }];
+  const genericAdvices = {
+    good: [{ icon: 'air', color: 'text-[#14A44D]', text: "Ouvrez les fenêtres pour aérer" }],
+    moderate: [{ icon: 'air', color: 'text-[#EAB308]', text: "Aération recommandée brève" }],
+    orange: [{ icon: 'window', color: 'text-[#81d4d8]', text: 'Gardez les fenêtres fermées' }, { icon: 'masks', color: 'text-[#81d4d8]', text: "Portez un masque dehors" }],
+    red: [{ icon: 'window', color: 'text-[#DC2626]', text: 'Fermeture stricte des fenêtres' }, { icon: 'masks', color: 'text-[#DC2626]', text: "Masque FFP2 fortement recommandé" }]
+  };
+  const adviceItems = [{ ...currentProfile.advice[status.level], isMain: true }, ...genericAdvices[status.level]];
 
   return (
-    <div className="relative min-h-screen pt-20 px-4 select-none">
+    <div className="relative min-h-screen pt-20 px-4 select-none lg:pt-24 lg:flex lg:justify-center animate-page-reveal">
       <div className="fixed top-1/4 left-1/2 -translate-x-1/2 w-full h-[500px] blur-[120px] opacity-20 pointer-events-none transition-all duration-1000" style={{ background: `radial-gradient(circle, ${status.color} 0%, transparent 70%)` }} />
 
       {/* HEADER */}
-      <header className="fixed top-0 left-0 right-0 z-[60] h-20 flex items-center justify-between px-6 bg-gradient-to-b from-[#00132d] to-transparent pointer-events-none">
+      <header className="fixed top-0 left-0 right-0 z-[60] h-20 flex items-center justify-between px-6 bg-gradient-to-b from-[#00132d] to-transparent pointer-events-none lg:px-12 animate-content-entrance">
         <button onClick={() => setShowCityPicker(true)} className="flex flex-col pointer-events-auto text-left group">
-          <div className="flex items-center gap-1.5 opacity-60">
-            <span className={`material-symbols-outlined text-[14px] ${isDetecting ? 'animate-spin' : ''}`}>location_on</span>
-            <span className="text-[10px] font-black uppercase tracking-widest leading-none">{isDetecting ? 'Localisation...' : 'Cameroun • Live'}</span>
-            <span className="material-symbols-outlined text-[12px]">expand_more</span>
-          </div>
-          <h1 className="text-2xl font-black tracking-tighter text-[#81d4d8] leading-none mt-1 uppercase italic">{currentVille}</h1>
+          <div className="flex items-center gap-1.5 opacity-60"><span className={`material-symbols-outlined text-[14px] ${isDetecting ? 'animate-spin' : ''}`}>location_on</span><span className="text-[10px] font-black uppercase tracking-widest leading-none">{isDetecting ? 'Localisation...' : 'Cameroun • Live'}</span><span className="material-symbols-outlined text-[12px]">expand_more</span></div>
+          <h1 className="text-2xl font-black tracking-tighter text-[#81d4d8] leading-none mt-1 uppercase italic lg:text-3xl">{currentVille}</h1>
         </button>
-        <button onClick={() => setShowProfilePicker(true)} className="h-10 w-10 glass-button rounded-full flex items-center justify-center pointer-events-auto">
-          <span className="material-symbols-outlined text-sm">{currentProfile.icon}</span>
+        <button onClick={() => setShowProfilePicker(true)} className="h-10 w-10 glass-button rounded-full flex items-center justify-center pointer-events-auto lg:h-12 lg:w-12 transition-transform hover:scale-110 active:scale-90">
+          <span className="material-symbols-outlined text-sm lg:text-base">{currentProfile.icon}</span>
         </button>
       </header>
 
       {/* CORE CONTENT */}
-      <main className="max-w-[450px] mx-auto space-y-12 pb-32 relative z-10">
-        <section className="flex flex-col items-center justify-center py-6">
-          <div className="relative">
+      <main className="w-full max-w-[450px] mx-auto space-y-12 pb-32 relative z-10 lg:max-w-6xl lg:grid lg:grid-cols-12 lg:gap-16 lg:items-start lg:px-8">
+        
+        {/* COLONNE GAUCHE (SPHÈRE AQI) */}
+        <section className="flex flex-col items-center justify-center py-6 lg:col-span-5 lg:sticky lg:top-32 lg:py-0 animate-content-entrance delay-100">
+          <div className="relative group cursor-default">
             <div className={`absolute inset-0 rounded-full border border-white/5 scale-125 transition-all duration-1000 ${status.isPulsing ? 'animate-pulse' : ''}`} />
-            <div className={`aqi-sphere h-72 w-72 rounded-full flex flex-col items-center justify-center border border-white/10 ${status.glow} ${status.isCritical ? 'aqi-pulse-red' : ''}`} style={{ background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at center, rgba(${status.rgb}, 0.2) 0%, transparent 70%)`, boxShadow: `inset 0 0 40px rgba(${status.rgb}, 0.2)` }}>
-              <div className="flex flex-col items-center text-center"><span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/30 mb-1">Atmospheric Index</span><span className="text-[100px] font-black tracking-tighter text-white leading-none transition-all duration-500">{displayAQI}</span><div className="mt-4 px-6 py-1.5 rounded-full border border-white/10 backdrop-blur-md flex items-center gap-2" style={{ backgroundColor: `rgba(${status.rgb}, 0.1)` }}><div className={`h-1.5 w-1.5 rounded-full ${status.isPulsing ? 'animate-ping' : ''}`} style={{ backgroundColor: status.color }} /><span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: status.color }}>{status.label}</span></div></div>
+            <div className={`aqi-sphere h-72 w-72 rounded-full flex flex-col items-center justify-center border border-white/10 lg:h-96 lg:w-96 ${status.glow} ${status.isCritical ? 'aqi-pulse-red' : ''}`} style={{ background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at center, rgba(${status.rgb}, 0.2) 0%, transparent 70%)`, boxShadow: `inset 0 0 40px rgba(${status.rgb}, 0.2)` }}>
+              <div className="flex flex-col items-center text-center">
+                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/30 mb-1 lg:text-[11px]">Atmospheric Index</span>
+                <span className="text-[100px] font-black tracking-tighter text-white leading-none transition-all duration-500 lg:text-[140px]">{displayAQI}</span>
+                <div className="mt-4 px-6 py-1.5 rounded-full border border-white/10 backdrop-blur-md flex items-center gap-2 lg:mt-8 lg:px-8" style={{ backgroundColor: `rgba(${status.rgb}, 0.1)` }}>
+                  <div className={`h-1.5 w-1.5 rounded-full ${status.isPulsing ? 'animate-ping' : ''}`} style={{ backgroundColor: status.color }} />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] lg:text-[12px]" style={{ color: status.color }}>{status.label}</span>
+                </div>
+              </div>
             </div>
           </div>
-          <p className="mt-12 text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 opacity-60 text-center italic max-w-[200px]">"{status.desc}"</p>
+          <p className="mt-12 text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 opacity-60 text-center italic max-w-[200px] lg:max-w-none lg:text-[13px]">"{status.desc}"</p>
         </section>
 
-        {/* SÉLECTEUR DE JOUR : TAILLE RÉDUITE + CLIC ACTIVÉ */}
-        <section className="space-y-2 relative overflow-hidden py-2">
-          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 opacity-60 ml-6">Historique & Prévisions</h2>
+        {/* COLONNE DROITE */}
+        <div className="lg:col-span-7 space-y-12 animate-content-entrance delay-300">
           
-          <div 
-            ref={scrollRef}
-            onScroll={handleScroll}
-            className="flex gap-1 overflow-x-auto no-scrollbar snap-x snap-mandatory px-[calc(50%-40px)] scroll-smooth pointer-events-auto py-6"
-          >
-            {days.map((day) => {
-              const isSelected = selectedDayIndex === day.index;
-              
-              return (
-                <div
-                  key={day.index}
-                  onClick={() => {
-                    setSelectedDayIndex(day.index);
-                    scrollRef.current.children[day.index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                  }}
-                  className={`flex-shrink-0 w-20 h-24 flex items-center justify-center snap-center transition-all duration-500 cursor-pointer ${
-                    isSelected ? 'scale-125 z-20' : 'scale-90 z-10'
-                  }`}
-                >
-                  <div className={`w-16 h-20 rounded-[24px] flex flex-col items-center justify-center border transition-all duration-500 ${
-                    isSelected ? 'glass-card border-[#81d4d8]/50 bg-[#81d4d8]/20 text-[#81d4d8] shadow-2xl' : 'border-white/5 bg-white/5 text-slate-500 opacity-40 hover:opacity-100 hover:border-white/20'
-                  }`}>
-                    <span className="text-[9px] font-black uppercase tracking-widest">{day.dayName}</span>
-                    <span className="text-xl font-black italic mt-1">{day.dateNum}</span>
+          {/* SÉLECTEUR DE JOUR */}
+          <section className="space-y-2 relative overflow-hidden py-2">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 opacity-60 ml-6 lg:ml-2">Historique & Prévisions</h2>
+            <div ref={scrollRef} onScroll={handleScroll} className="flex gap-1 overflow-x-auto no-scrollbar snap-x snap-mandatory px-[calc(50%-40px)] lg:px-2 scroll-smooth pointer-events-auto py-6 lg:justify-start lg:snap-none">
+              {days.map((day) => {
+                const isSelected = selectedDayIndex === day.index;
+                return (
+                  <div key={day.index} onClick={() => { setSelectedDayIndex(day.index); scrollRef.current.children[day.index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); }} className={`flex-shrink-0 w-20 h-24 flex items-center justify-center snap-center transition-all duration-500 cursor-pointer ${isSelected ? 'scale-125 z-20' : 'scale-90 z-10 lg:scale-100 lg:opacity-40'}`}>
+                    <div className={`w-16 h-20 rounded-[24px] flex flex-col items-center justify-center border transition-all duration-500 ${isSelected ? 'glass-card border-[#81d4d8]/50 bg-[#81d4d8]/20 text-[#81d4d8] shadow-2xl' : 'border-white/5 bg-white/5 text-slate-500 hover:opacity-100'}`}>
+                      <span className="text-[9px] font-black uppercase tracking-widest">{day.dayName}</span>
+                      <span className="text-xl font-black italic mt-1">{day.dateNum}</span>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#00132d] to-transparent pointer-events-none z-10" />
-          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#00132d] to-transparent pointer-events-none z-10" />
-        </section>
-
-        {/* CONSEILS */}
-        <section className="space-y-6 px-4 pb-10">
-          <div className="flex items-center justify-between"><h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 opacity-60">Atmospheric Advice</h2><div className="px-4 py-1.5 glass-card rounded-full text-[9px] font-black uppercase text-[#81d4d8] italic tracking-widest border-white/10">{currentProfile.label}</div></div>
-          <div className="glass-card rounded-[40px] p-10 space-y-10 relative overflow-hidden group border-white/10">
-            <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-125 transition-all duration-1000"><span className="material-symbols-outlined text-9xl">{currentProfile.icon}</span></div>
-            <div className="flex flex-col gap-10 relative z-10">
-              {adviceItems.map((item, idx) => (
-                <div className="flex items-start gap-8" key={idx}>
-                  <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-white/10 border border-white/10 shadow-xl"><span className={`material-symbols-outlined text-3xl ${item.color} filled`}>{item.icon}</span></div>
-                  <div className="space-y-2"><p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#81d4d8] opacity-80">Action Prioritaire</p><p className="text-[15px] leading-relaxed font-bold text-white italic">{item.text}</p></div>
-                </div>
-              ))}
+                );
+              })}
             </div>
-          </div>
-        </section>
+          </section>
+
+          {/* CONSEILS */}
+          <section className="space-y-6 px-4 lg:px-0 animate-content-entrance delay-500">
+            <div className="flex items-center justify-between"><h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 opacity-60">Atmospheric Advice</h2><div className="px-4 py-1.5 glass-card rounded-full text-[9px] font-black uppercase text-[#81d4d8] italic tracking-widest border-white/10">{currentProfile.label}</div></div>
+            <div className="glass-card rounded-[40px] p-10 space-y-10 relative overflow-hidden group border-white/10 lg:p-12">
+              <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-125 transition-all duration-1000"><span className="material-symbols-outlined text-[120px]">{currentProfile.icon}</span></div>
+              <div className="flex flex-col gap-10 relative z-10">
+                {adviceItems.map((item, idx) => (
+                  <div className="flex items-start gap-8" key={idx}>
+                    <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-white/10 border border-white/10 shadow-xl lg:h-16 lg:w-16"><span className={`material-symbols-outlined text-3xl lg:text-4xl ${item.color} filled`}>{item.icon}</span></div>
+                    <div className="space-y-2"><p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#81d4d8] opacity-80">Action Prioritaire</p><p className="text-[15px] leading-relaxed font-bold text-white italic lg:text-lg">{item.text}</p></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+        </div>
       </main>
 
-      {/* MODALS PERSISTANTS (CITY, PROFILE, SIGNALEMENT) */}
+      {/* MODALS ... */}
       {showCityPicker && <CityPickerModal />}
       {showProfilePicker && <ProfilePickerModal />}
       {showReportingModal && <ReportingModal />}
@@ -211,8 +185,8 @@ function CitoyenDashboard() {
 const CityPickerModal = () => {
   const { currentVille, setCurrentVille, setCurrentAQI, setShowCityPicker } = useStore();
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center px-6 backdrop-blur-2xl bg-[#00132d]/60">
-      <div className="w-full max-w-[350px] glass-card rounded-[40px] p-8 space-y-6 animate-in zoom-in duration-300 border-white/10 pointer-events-auto">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center px-6 backdrop-blur-2xl bg-[#00132d]/60 animate-page-reveal">
+      <div className="w-full max-w-[350px] glass-card rounded-[40px] p-8 space-y-6 border-white/10 pointer-events-auto">
         <div className="flex justify-between items-center"><h3 className="text-xl font-black text-white italic uppercase tracking-tighter">Villes</h3><button onClick={() => setShowCityPicker(false)} className="h-10 w-10 glass-button rounded-full flex items-center justify-center"><span className="material-symbols-outlined text-sm">close</span></button></div>
         <div className="max-h-[300px] overflow-y-auto no-scrollbar space-y-2">
           {CAMEROON_CITIES.map((city) => (
@@ -230,12 +204,12 @@ const CityPickerModal = () => {
 const ProfilePickerModal = () => {
   const { profileType, setProfileType, setShowProfilePicker } = useStore();
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center px-6 backdrop-blur-2xl bg-[#00132d]/60">
-      <div className="w-full max-w-[350px] glass-card rounded-[40px] p-8 space-y-6 animate-in zoom-in duration-300 border-white/10 pointer-events-auto">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center px-6 backdrop-blur-2xl bg-[#00132d]/60 animate-page-reveal">
+      <div className="w-full max-w-[350px] glass-card rounded-[40px] p-8 space-y-6 border-white/10 pointer-events-auto">
         <div className="flex justify-between items-center"><h3 className="text-xl font-black text-white italic uppercase tracking-tighter">Mon Profil</h3><button onClick={() => setShowProfilePicker(false)} className="h-10 w-10 glass-button rounded-full flex items-center justify-center"><span className="material-symbols-outlined text-sm">close</span></button></div>
         <div className="space-y-3">
           {Object.values(PROFILES).map((prof) => (
-            <button key={prof.id} onClick={() => setProfileType(prof.id)} className={`w-full p-5 rounded-3xl flex items-center gap-5 transition-all ${profileType === prof.id ? 'bg-[#81d4d8]/20 border border-[#81d4d8]/30' : 'bg-white/5 border border-white/5'}`}>
+            <button key={prof.id} onClick={() => setProfileType(prof.id)} className={`w-full p-5 rounded-3xl flex items-center gap-5 transition-all ${profileType === prof.id ? 'bg-[#81d4d8]/20 border border-[#81d4d8]/30' : 'bg-white/5 border border-white/5 hover:bg-white/10'}`}>
               <div className={`h-12 w-12 rounded-2xl flex items-center justify-center ${profileType === prof.id ? 'bg-[#81d4d8] text-[#00132d]' : 'bg-white/10 text-white'}`}><span className="material-symbols-outlined">{prof.icon}</span></div>
               <span className="text-sm font-black text-white uppercase italic tracking-tight">{prof.label}</span>
             </button>
@@ -252,8 +226,8 @@ const ReportingModal = () => {
   const [reportResult, setReportResult] = useState(null);
   const handleReport = () => { setIsReporting(true); setTimeout(() => { setReportResult({ aqi: currentAQI + 15, type_pollution: "Fumée de combustion", timestamp: "À l'instant" }); setIsReporting(false); }, 2000); };
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center px-6 backdrop-blur-2xl bg-[#00132d]/40">
-      <div className="w-full max-w-[350px] glass-card rounded-[40px] p-10 space-y-8 animate-in zoom-in duration-300 border-white/10 pointer-events-auto">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center px-6 backdrop-blur-2xl bg-[#00132d]/40 animate-page-reveal">
+      <div className="w-full max-w-[350px] glass-card rounded-[40px] p-10 space-y-8 border-white/10 pointer-events-auto">
         {!reportResult && !isReporting ? (
           <div className="text-center space-y-8">
             <div className="h-24 w-24 bg-[#81d4d8]/10 rounded-[32px] flex items-center justify-center mx-auto border border-[#81d4d8]/20 animate-pulse"><span className="material-symbols-outlined text-5xl text-[#81d4d8]">campaign</span></div>
