@@ -1,0 +1,150 @@
+CHANGEMENT DE DIRECTION — lis bien avant de continuer.
+
+Le chef de groupe a recadré le projet. Voici les nouvelles priorités :
+
+1. SUPPRIME L'AUTH POUR L'INSTANT
+   Commente tout le code Supabase Auth et les guards de routes.
+   L'app est publique, tout le monde accède à tout sans compte.
+   On réactivera l'auth plus tard si le temps le permet.
+
+2. REFONTE VISUELLE COMPLÈTE
+   Abandonne le dark navy (#0A2342) comme fond principal.
+   Nouveau fond : blanc #FFFFFF ou gris très clair #F8FAFC
+   Les couleurs AQI restent (vert/jaune/orange/rouge) mais sur
+   fond clair — elles ressortent beaucoup mieux.
+   Inspire-toi des apps : IQAir, AirVisual, Windy, Weather.com
+
+3. LE CŒUR DE L'APP = EXPLORATION DES DONNÉES HISTORIQUES
+   L'utilisateur doit pouvoir :
+   - Choisir une ville parmi les 42 du Cameroun
+   - Choisir une année (2020 → 2025)
+   - Choisir un jour précis dans l'année
+   - Choisir une heure (0h → 23h)
+   - Voir l'AQI + PM2.5 + PM10 + NO2 + O3 pour ce moment précis
+   - Comparer deux années côte à côte sur un même graphique
+
+4. VISUALISATIONS PRIORITAIRES à implémenter :
+   - Graphique ligne : évolution AQI sur 12 mois (avec courbe lisse)
+   - Heatmap calendrier : chaque jour de l'année coloré par AQI
+     (comme GitHub contribution graph mais avec les couleurs AQI)
+   - Graphique barres : comparaison mois par mois entre 2 années
+   - Carte Cameroun : toutes les villes colorées par AQI
+     pour une date donnée — on voit la pollution se déplacer
+
+5. MVP À LIVRER
+   Une seule page bien faite avec :
+   - Sélecteur ville + année + date + heure (en haut)
+   - AQI du moment en grand avec couleur
+   - 2-3 graphiques clairs en dessous
+   C'est suffisant pour le jury si c'est beau et fonctionnel.
+
+Recommence le design en partant de zéro avec ces nouvelles specs.
+
+
+
+
+
+
+
+
+
+
+MISE À JOUR IMPORTANTE — lis avant tout.
+
+Le dataset officiel du hackathon est disponible ici :
+https://github.com/irchhjc/HACKATHON-INDABAX-CAMEROON-2026
+
+Il contient un fichier Excel (.xlsx) dans le dossier /data avec :
+- 42 villes camerounaises sur 10 régions
+- Période : janvier 2020 → décembre 2025
+- 87 240 observations journalières
+- Variables : température min/max/moy, vent vitesse/rafales/direction,
+  précipitations, ensoleillement, rayonnement solaire, ET0, code météo
+- Format : Excel .xlsx
+
+NOUVELLE ARCHITECTURE — plus de backend pour l'instant :
+
+1. Convertis le fichier Excel en JSON via un script Python :
+   python convert.py → génère data.json
+
+2. Place data.json dans frontend/public/data.json
+
+3. L'app React charge directement ce JSON au démarrage
+   avec fetch('/data/data.json') — pas de FastAPI, pas de Supabase.
+   On ajoute le backend plus tard quand les modèles .pkl sont prêts.
+
+CE QUE L'APP DOIT PERMETTRE DE VISUALISER :
+
+Sélecteurs en haut de page :
+- Ville (dropdown 42 villes groupées par région)
+- Année (2020 / 2021 / 2022 / 2023 / 2024 / 2025)
+- Mois (optionnel)
+- Jour (optionnel)
+
+Visualisations principales :
+
+1. CARTE CAMEROUN (Leaflet)
+   42 villes avec un point coloré selon la température max
+   ou le code météo de la date sélectionnée
+   Clic sur une ville → zoom + données détaillées
+
+2. GRAPHIQUE ÉVOLUTION ANNUELLE (Recharts LineChart)
+   Courbe température moy sur 12 mois pour la ville choisie
+   Possibilité de superposer 2 années pour comparer
+
+3. HEATMAP CALENDRIER (style GitHub contributions)
+   Chaque jour de l'année = une case colorée selon
+   température ou intensité du vent
+   Vue d'un coup d'œil des pics climatiques
+
+4. CARDS MÉTRIQUES du jour sélectionné :
+   Temp max | Temp min | Vent max | Précipitations | Ensoleillement
+
+5. GRAPHIQUE BARRES comparaison mensuelle
+   Mois par mois, comparer 2 années côte à côte
+
+DESIGN : fond blanc #FFFFFF, accents teal #0D7377,
+couleurs climatiques (bleu = froid, orange = chaud, rouge = extrême)
+Inspiré de Weather.com et IQAir — propre, lisible, professionnel.
+
+Commence par le script Python de conversion Excel → JSON,
+puis le composant React principal avec le sélecteur de ville.
+
+
+
+
+
+
+
+
+
+
+
+Un explorateur climatique du Cameroun
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+"Quelle ville a eu les températures les plus extrêmes en 2023 ?"
+"Est-ce que le vent était plus fort à Maroua en saison sèche 2022 vs 2024 ?"
+"Quels mois ont eu le moins de pluie à Douala sur 5 ans ?"
+"Montre-moi les pics de chaleur au Grand Nord entre 2020 et 2025"
+
+
+
+
+
+
+CORRECTION SUR LES DONNÉES :
+
+Les données à visualiser sont les données météo du dataset officiel :
+température min/max/moy, vent vitesse/rafales/direction dominante,
+précipitations, ensoleillement, rayonnement solaire, ET0, code météo.
+
+Ce sont CES données qui sont le cœur de l'app — pas l'AQI.
+L'AQI (PM2.5, NO2...) sera un bonus optionnel ajouté plus tard
+via Open-Meteo API si le temps le permet.
+
+Toutes les visualisations (carte, graphiques, heatmap, cards)
+doivent donc se baser sur ces variables climatiques.
+
+
+

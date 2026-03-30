@@ -18,10 +18,10 @@ const PROFILES = {
 };
 
 const getAqiConfig = (aqi) => {
-  if (aqi <= 50) return { level: 'good', color: '#14A44D', rgb: '20, 164, 77', label: 'EXCELLENT', msg: 'Respirez librement', action: 'Sortie conseillée' };
-  if (aqi <= 100) return { level: 'moderate', color: '#EAB308', rgb: '234, 179, 8', label: 'MODÉRÉ', msg: 'Air un peu chargé', action: 'Prudence modérée' };
-  if (aqi <= 150) return { level: 'orange', color: '#F97316', rgb: '249, 115, 22', label: 'ALERTE', msg: 'Qualité mauvaise', action: 'Portez un masque' };
-  return { level: 'red', color: '#DC2626', rgb: '220, 38, 38', label: 'CRITIQUE', msg: 'DANGER SANTÉ', action: 'RESTEZ À L\'INTÉRIEUR', isPulsing: true };
+  if (aqi <= 50) return { level: 'good', color: '#14A44D', label: 'EXCELLENT', msg: 'Respirez librement', action: 'Sortie conseillée' };
+  if (aqi <= 100) return { level: 'moderate', color: '#EAB308', label: 'MODÉRÉ', msg: 'Air un peu chargé', action: 'Prudence modérée' };
+  if (aqi <= 150) return { level: 'orange', color: '#F97316', label: 'ALERTE', msg: 'Qualité mauvaise', action: 'Portez un masque' };
+  return { level: 'red', color: '#DC2626', label: 'CRITIQUE', msg: 'DANGER SANTÉ', action: 'RESTEZ À L\'INTÉRIEUR', isPulsing: true };
 };
 
 const getWeekWindow = () => {
@@ -55,11 +55,11 @@ function CitoyenDashboard() {
   ];
 
   return (
-    <div className="relative min-h-screen bg-deep-navy text-slate-50 select-none lg:flex lg:justify-center animate-page-reveal overflow-x-hidden">
+    <div className="relative min-h-screen bg-[#0A2342] text-slate-50 select-none lg:flex lg:justify-center animate-page-reveal overflow-x-hidden">
       
       <style>{`
-        .no-scrollbar::-webkit-scrollbar { display: none !important; }
-        .no-scrollbar { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+        * { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+        *::-webkit-scrollbar { display: none !important; }
         @keyframes wave { 0% { transform: translateX(-50%) skewY(-5deg); } 50% { transform: translateX(-30%) skewY(5deg); } 100% { transform: translateX(-50%) skewY(-5deg); } }
         .liquid-wave { animation: wave 10s infinite linear; opacity: 0.2; }
       `}</style>
@@ -72,8 +72,8 @@ function CitoyenDashboard() {
           <p className="text-[10px] font-bold text-teal-vif tracking-widest uppercase leading-none">AirWatch Cameroun</p>
           <h1 className="text-xl font-bold flex items-center gap-2 lg:text-2xl mt-1">{currentVille} <span className="material-symbols-outlined text-sm">expand_more</span></h1>
         </button>
-        <button onClick={() => setShowProfilePicker(true)} className="h-10 w-10 glass-button rounded-full flex items-center justify-center transition-transform hover:scale-110 active:scale-90 shadow-xl">
-          <span className="material-symbols-outlined text-teal-vif">{PROFILES[profileType]?.icon}</span>
+        <button onClick={() => setShowProfilePicker(true)} className="h-12 w-12 glass-button rounded-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-90 shadow-xl border-white/20">
+          <span className="material-symbols-outlined text-teal-vif text-2xl">{PROFILES[profileType]?.icon}</span>
         </button>
       </header>
 
@@ -93,7 +93,7 @@ function CitoyenDashboard() {
             >
               <div className="absolute inset-0 pointer-events-none"><div className="liquid-wave absolute bottom-0 left-0 w-[200%] h-full transition-all duration-1000" style={{ backgroundColor: status.color, transform: `translateY(${100 - (displayAQI / 300) * 100}%)`, borderRadius: '40% 45% 42% 38%' }} /></div>
               <div className="relative z-10 flex flex-col items-center">
-                <span className="text-[10px] font-black uppercase text-white/30 mb-2 tracking-[0.3em]">Qualité de l'Air</span>
+                <span className="text-[10px] font-black uppercase text-white/30 mb-2 tracking-[0.3em]">Indice Qualité Air</span>
                 <span className="text-[110px] lg:text-[150px] font-bold tracking-tighter text-white leading-none drop-shadow-xl">{displayAQI}</span>
                 <div className="mt-4 px-6 py-2 rounded-full backdrop-blur-xl border border-white/20 shadow-2xl" style={{ backgroundColor: status.color }}><span className="text-xs font-black uppercase text-[#001a3d]">{status.msg}</span></div>
               </div>
@@ -101,7 +101,7 @@ function CitoyenDashboard() {
           </div>
           <div className="mt-12 text-center space-y-4 w-full px-4">
             <div className="glass-card rounded-[32px] p-8 border-t-4 shadow-2xl" style={{ borderTopColor: status.color }}>
-              <h3 className="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 italic">Recommandation Immédiate</h3>
+              <h3 className="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 italic">Recommandation</h3>
               <p className="text-xl font-bold italic uppercase text-white tracking-tight leading-tight">{status.action}</p>
               <p className="text-sm text-slate-400 font-medium mt-4 leading-relaxed italic opacity-80">"{currentAdvice}"</p>
             </div>
@@ -111,13 +111,13 @@ function CitoyenDashboard() {
         {/* COLONNE DROITE */}
         <div className="lg:col-span-7 space-y-16 animate-content-entrance delay-200">
           
-          {/* SÉLECTEUR DE JOUR : FIXÉ ET CENTRÉ VERTICALEMENT */}
+          {/* SÉLECTEUR DE JOUR */}
           <section className="space-y-4 relative">
             <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 opacity-60 ml-6">Historique & Prévisions</h2>
-            <div className="relative py-12 px-2"> {/* py-12 constant pour PC et Mobile */}
-              <div ref={scrollRef} className="flex gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory px-10 lg:px-4 lg:justify-start lg:snap-none">
+            <div className="relative px-2 py-6 overflow-visible">
+              <div ref={scrollRef} className="flex items-center gap-4 overflow-x-auto overflow-y-visible no-scrollbar snap-x snap-mandatory px-10 py-6 lg:px-4 lg:justify-start lg:snap-none">
                 {days.map((day) => (
-                  <button key={day.index} onClick={() => setSelectedDayIndex(day.index)} className={`flex-shrink-0 w-16 h-20 rounded-2xl border transition-all duration-500 snap-center ${selectedDayIndex === day.index ? 'bg-teal-vif text-[#001a3d] font-bold border-transparent scale-125 lg:scale-110 shadow-[0_15px_40px_rgba(13,115,119,0.5)] z-10 mx-2' : 'bg-white/5 border-white/5 text-slate-500 scale-90 opacity-40'}`}>
+                  <button key={day.index} onClick={() => setSelectedDayIndex(day.index)} className={`flex-shrink-0 w-16 h-20 rounded-2xl border transition-all duration-500 snap-center ${selectedDayIndex === day.index ? 'bg-teal-vif text-[#001a3d] font-bold border-transparent scale-150 shadow-[0_15px_40px_rgba(13,115,119,0.6)] z-10 mx-4' : 'bg-white/5 border-white/5 text-slate-500 scale-90 opacity-40'}`}>
                     <span className="text-[9px] block uppercase leading-none">{day.dayName}</span>
                     <span className="text-xl block italic mt-1 font-black">{day.dateNum}</span>
                   </button>
@@ -151,7 +151,7 @@ function CitoyenDashboard() {
         </div>
       </main>
 
-      {/* MODALS : PORTAL STYLE */}
+      {/* MODALS */}
       {showCityPicker && <PortalModal title="Villes" onClose={() => setShowCityPicker(false)}><CityPickerContent /></PortalModal>}
       {showProfilePicker && <PortalModal title="Votre Profil" onClose={() => setShowProfilePicker(false)}><ProfilePickerContent /></PortalModal>}
       {showReportingModal && <PortalModal title="Signaler" onClose={() => setShowReportingModal(false)}><ReportingContent /></PortalModal>}
@@ -183,7 +183,7 @@ const PortalModal = ({ title, children, onClose }) => {
   );
 };
 
-// Contents
+// Contenus
 const CityPickerContent = () => {
   const { currentVille, setCurrentVille, setCurrentAQI, setShowCityPicker } = useStore();
   return (
@@ -217,9 +217,9 @@ const ReportingContent = () => {
   const [isReporting, setIsReporting] = useState(false);
   const [reportResult, setReportResult] = useState(null);
   const handleReport = () => { setIsReporting(true); setTimeout(() => { setReportResult({ aqi: currentAQI + 15, type_pollution: "Fumée", timestamp: "À l'instant" }); setIsReporting(false); }, 2000); };
-  if (isReporting) return <div className="flex flex-col items-center py-12 space-y-8"><div className="h-24 w-24 rounded-full border-4 border-dashed border-teal-vif animate-spin" /><h3 className="text-xl font-bold text-white uppercase italic tracking-tighter">Analyse IA...</h3></div>;
+  if (isReporting) return <div className="flex flex-col items-center py-12 space-y-8"><div className="h-24 w-24 rounded-full border-4 border-dashed border-teal-vif animate-spin" /><h3 className="text-xl font-bold text-white uppercase italic">Analyse IA...</h3></div>;
   if (reportResult) return <div className="space-y-8 text-center"><div className="bg-white/5 p-6 rounded-3xl border border-white/5 flex items-center gap-6 text-left"><div className="h-16 w-16 glass-card rounded-xl flex flex-col justify-center items-center"><span className="text-[10px] font-bold opacity-40">AQI</span><span className="text-2xl font-bold">{reportResult.aqi}</span></div><div className="font-black uppercase italic text-sm">{reportResult.type_pollution}</div></div><button onClick={() => setShowReportingModal(false)} className="w-full py-5 bg-teal-vif text-[#001a3d] rounded-3xl text-[11px] font-bold uppercase shadow-xl shadow-teal-vif/20">Terminer</button></div>;
-  return <div className="text-center space-y-8 py-4"><div className="h-20 w-20 bg-teal-vif/10 rounded-full flex items-center justify-center mx-auto border border-teal-vif/20 animate-pulse"><span className="material-symbols-outlined text-4xl text-teal-vif">campaign</span></div><p className="text-xs text-slate-400 font-medium px-4 leading-relaxed">Souhaitez-vous signaler une pollution ? Votre position GPS sera analysée par l'IA.</p><div className="flex gap-4"><button onClick={() => setShowReportingModal(false)} className="flex-1 py-5 glass-button rounded-3xl text-[10px] font-black uppercase">Non</button><button onClick={handleReport} className="flex-1 py-5 bg-teal-vif text-[#001a3d] rounded-3xl text-[10px] font-bold uppercase shadow-lg shadow-teal-vif/20">Oui</button></div></div>;
+  return <div className="text-center space-y-8 py-4"><div className="h-20 w-20 bg-teal-vif/10 rounded-full flex items-center justify-center mx-auto border border-teal-vif/20 animate-pulse"><span className="material-symbols-outlined text-4xl text-teal-vif">campaign</span></div><p className="text-xs text-slate-400 font-medium px-4">Souhaitez-vous signaler une pollution ? Votre position GPS sera analysée par l'IA.</p><div className="flex gap-4"><button onClick={() => setShowReportingModal(false)} className="flex-1 py-5 glass-button rounded-3xl text-[10px] font-bold uppercase">Non</button><button onClick={handleReport} className="flex-1 py-5 bg-teal-vif text-[#001a3d] rounded-3xl text-[10px] font-bold uppercase shadow-lg shadow-teal-vif/20">Oui</button></div></div>;
 };
 
 export default CitoyenDashboard;
