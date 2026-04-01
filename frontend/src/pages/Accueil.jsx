@@ -1,0 +1,599 @@
+import React, { useState } from 'react';
+import { MapContainer, TileLayer, CircleMarker, Tooltip as LeafletTooltip } from 'react-leaflet';
+import { LineChart, BarChart, Bar, Line, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell } from 'recharts';
+import { Thermometer, Wind, CloudRain, Sun, AlertTriangle, Heart, Shield, Activity, TrendingUp, TrendingDown, Users, Leaf } from 'lucide-react';
+
+// 42 villes du Cameroun avec leurs coordonnées et données AQI/climatiques
+const villesCamerounData = [
+  { name: 'Yaoundé', pos: [3.8667, 11.5167], aqi: 110, tempMax: 28, tempMin: 19, wind: 12, precip: 5 },
+  { name: 'Douala', pos: [4.0511, 9.7679], aqi: 130, tempMax: 31, tempMin: 23, wind: 15, precip: 8 },
+  { name: 'Maroua', pos: [10.5913, 14.3159], aqi: 185, tempMax: 38, tempMin: 24, wind: 18, precip: 0 },
+  { name: 'Garoua', pos: [9.3017, 13.3978], aqi: 155, tempMax: 36, tempMin: 22, wind: 16, precip: 2 },
+  { name: 'Ngaoundéré', pos: [7.3167, 13.5833], aqi: 60, tempMax: 30, tempMin: 18, wind: 10, precip: 15 },
+  { name: 'Bafoussam', pos: [5.4781, 10.4186], aqi: 75, tempMax: 25, tempMin: 16, wind: 8, precip: 20 },
+  { name: 'Bamenda', pos: [5.9597, 10.1486], aqi: 70, tempMax: 26, tempMin: 15, wind: 9, precip: 25 },
+  { name: 'Bertoua', pos: [4.5806, 13.6842], aqi: 65, tempMax: 29, tempMin: 20, wind: 7, precip: 18 },
+  { name: 'Ebolowa', pos: [2.9000, 11.1500], aqi: 55, tempMax: 27, tempMin: 19, wind: 6, precip: 22 },
+  { name: 'Buea', pos: [4.1560, 9.2329], aqi: 50, tempMax: 24, tempMin: 18, wind: 12, precip: 30 },
+  { name: 'Kribi', pos: [2.9333, 9.9167], aqi: 45, tempMax: 28, tempMin: 22, wind: 14, precip: 28 },
+  { name: 'Limbe', pos: [4.0167, 9.2000], aqi: 48, tempMax: 26, tempMin: 21, wind: 13, precip: 32 },
+  { name: 'Kumba', pos: [4.6333, 9.4500], aqi: 68, tempMax: 27, tempMin: 20, wind: 10, precip: 24 },
+  { name: 'Edéa', pos: [3.8000, 10.1333], aqi: 72, tempMax: 29, tempMin: 21, wind: 11, precip: 19 },
+  { name: 'Dschang', pos: [5.4500, 10.0667], aqi: 52, tempMax: 23, tempMin: 14, wind: 8, precip: 26 },
+  { name: 'Foumban', pos: [5.7333, 10.9000], aqi: 78, tempMax: 28, tempMin: 17, wind: 9, precip: 16 },
+  { name: 'Mbalmayo', pos: [3.5167, 11.5000], aqi: 85, tempMax: 27, tempMin: 19, wind: 8, precip: 17 },
+  { name: 'Sangmelima', pos: [2.9333, 11.9833], aqi: 58, tempMax: 28, tempMin: 20, wind: 7, precip: 21 },
+  { name: 'Abong-Mbang', pos: [3.9833, 13.1833], aqi: 62, tempMax: 29, tempMin: 19, wind: 8, precip: 19 },
+  { name: 'Batouri', pos: [4.4333, 14.3667], aqi: 67, tempMax: 30, tempMin: 20, wind: 9, precip: 17 },
+  { name: 'Yokadouma', pos: [3.5167, 15.0500], aqi: 64, tempMax: 31, tempMin: 21, wind: 8, precip: 18 },
+  { name: 'Mokolo', pos: [10.7333, 13.8000], aqi: 175, tempMax: 37, tempMin: 23, wind: 17, precip: 1 },
+  { name: 'Kousseri', pos: [12.0833, 15.0333], aqi: 192, tempMax: 39, tempMin: 25, wind: 20, precip: 0 },
+  { name: 'Mora', pos: [11.0500, 14.1500], aqi: 180, tempMax: 38, tempMin: 24, wind: 18, precip: 0 },
+  { name: 'Guider', pos: [9.9333, 13.9500], aqi: 165, tempMax: 36, tempMin: 23, wind: 15, precip: 2 },
+  { name: 'Kaélé', pos: [10.0833, 14.4500], aqi: 170, tempMax: 37, tempMin: 23, wind: 16, precip: 1 },
+  { name: 'Yagoua', pos: [10.3333, 15.2333], aqi: 188, tempMax: 38, tempMin: 25, wind: 19, precip: 0 },
+  { name: 'Poli', pos: [8.7667, 13.2167], aqi: 145, tempMax: 35, tempMin: 21, wind: 14, precip: 3 },
+  { name: 'Tcholliré', pos: [8.3833, 14.1667], aqi: 140, tempMax: 34, tempMin: 21, wind: 13, precip: 4 },
+  { name: 'Meiganga', pos: [6.5167, 14.3000], aqi: 88, tempMax: 31, tempMin: 19, wind: 11, precip: 12 },
+  { name: 'Tibati', pos: [6.4667, 12.6167], aqi: 82, tempMax: 30, tempMin: 18, wind: 10, precip: 14 },
+  { name: 'Banyo', pos: [6.7500, 11.8167], aqi: 76, tempMax: 29, tempMin: 17, wind: 9, precip: 16 },
+  { name: 'Tignère', pos: [7.3667, 12.6667], aqi: 92, tempMax: 32, tempMin: 19, wind: 11, precip: 11 },
+  { name: 'Mbouda', pos: [5.6167, 10.2500], aqi: 74, tempMax: 24, tempMin: 15, wind: 8, precip: 23 },
+  { name: 'Bafang', pos: [5.1667, 10.1667], aqi: 79, tempMax: 26, tempMin: 16, wind: 9, precip: 21 },
+  { name: 'Nkongsamba', pos: [4.9500, 9.9333], aqi: 81, tempMax: 27, tempMin: 19, wind: 10, precip: 25 },
+  { name: 'Loum', pos: [4.7167, 9.7333], aqi: 94, tempMax: 29, tempMin: 21, wind: 11, precip: 20 },
+  { name: 'Manjo', pos: [4.7833, 9.6167], aqi: 88, tempMax: 28, tempMin: 20, wind: 10, precip: 22 },
+  { name: 'Tiko', pos: [4.0667, 9.3600], aqi: 53, tempMax: 27, tempMin: 21, wind: 12, precip: 31 },
+  { name: 'Mamfé', pos: [5.7667, 9.3000], aqi: 71, tempMax: 28, tempMin: 20, wind: 9, precip: 27 },
+  { name: 'Fontem', pos: [5.5667, 9.9167], aqi: 56, tempMax: 25, tempMin: 17, wind: 7, precip: 29 },
+  { name: 'Wum', pos: [6.3833, 10.0667], aqi: 69, tempMax: 26, tempMin: 16, wind: 8, precip: 26 },
+];
+
+const getAQIColor = (aqi) => {
+  if (aqi >= 150) return '#DC2626'; // Rouge - Critique
+  if (aqi >= 100) return '#F97316'; // Orange - Mauvais
+  if (aqi >= 50) return '#EAB308'; // Jaune - Modéré
+  return '#14A44D'; // Vert - Bon
+};
+
+const getAQILabel = (aqi) => {
+  if (aqi >= 150) return 'Critique';
+  if (aqi >= 100) return 'Mauvais';
+  if (aqi >= 50) return 'Modéré';
+  return 'Bon';
+};
+
+const getHealthAdvice = (aqi) => {
+  if (aqi >= 150) return {
+    message: "Évitez toute activité extérieure prolongée. Port du masque recommandé.",
+    icon: AlertTriangle,
+    color: "#DC2626",
+    groups: ["Enfants", "Personnes âgées", "Asthmatiques"]
+  };
+  if (aqi >= 100) return {
+    message: "Limitez les efforts physiques intenses à l'extérieur.",
+    icon: Shield,
+    color: "#F97316",
+    groups: ["Personnes sensibles"]
+  };
+  if (aqi >= 50) return {
+    message: "Qualité acceptable. Les personnes sensibles doivent rester vigilantes.",
+    icon: Activity,
+    color: "#EAB308",
+    groups: []
+  };
+  return {
+    message: "Qualité de l'air satisfaisante. Aucune précaution particulière.",
+    icon: Leaf,
+    color: "#14A44D",
+    groups: []
+  };
+};
+
+// Données d'évolution sur 7 jours
+const getWeeklyData = (baseAqi) => [
+  { jour: 'Lun', aqi: Math.round(baseAqi * 0.9) },
+  { jour: 'Mar', aqi: Math.round(baseAqi * 0.95) },
+  { jour: 'Mer', aqi: Math.round(baseAqi * 1.05) },
+  { jour: 'Jeu', aqi: Math.round(baseAqi * 0.98) },
+  { jour: 'Ven', aqi: Math.round(baseAqi * 1.02) },
+  { jour: 'Sam', aqi: Math.round(baseAqi * 0.92) },
+  { jour: 'Dim', aqi: baseAqi },
+];
+
+const Accueil = ({ selectedVille, setSelectedVille }) => {
+  const selectedCityData = villesCamerounData.find(v => v.name === selectedVille) || villesCamerounData[0];
+  const healthAdvice = getHealthAdvice(selectedCityData.aqi);
+  const HealthIcon = healthAdvice.icon;
+  const weeklyData = getWeeklyData(selectedCityData.aqi);
+  
+  // Top 5 villes les plus polluées
+  const topPolluted = [...villesCamerounData]
+    .sort((a, b) => b.aqi - a.aqi)
+    .slice(0, 5);
+  
+  // Top 5 villes les moins polluées
+  const cleanestCities = [...villesCamerounData]
+    .sort((a, b) => a.aqi - b.aqi)
+    .slice(0, 5);
+
+  // Données sparkline pour les cartes métriques (6 derniers mois simulés)
+  const sparklineData = [
+    { value: selectedCityData.tempMax - 3 },
+    { value: selectedCityData.tempMax - 2 },
+    { value: selectedCityData.tempMax - 1 },
+    { value: selectedCityData.tempMax },
+    { value: selectedCityData.tempMax + 1 },
+    { value: selectedCityData.tempMax + 2 },
+  ];
+
+  return (
+    <div className="w-full overflow-x-hidden">
+      {/* TOP 60% - MAP */}
+      <div className="w-full" style={{ height: '50vh', minHeight: '300px' }}>
+        <div className="relative w-full h-full overflow-hidden">
+          <MapContainer 
+            center={[7.36, 12.35]} 
+            zoom={5.5} 
+            style={{ height: '100%', width: '100%', zIndex: 10 }}
+            zoomControl={false}
+          >
+            <TileLayer 
+              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            />
+            {villesCamerounData.map((ville, i) => (
+              <CircleMarker
+                key={i}
+                center={ville.pos}
+                radius={ville.name === selectedVille ? 16 : 10}
+                pathOptions={{
+                  fillColor: getAQIColor(ville.aqi),
+                  color: ville.name === selectedVille ? '#10B981' : 'white',
+                  weight: ville.name === selectedVille ? 4 : 2,
+                  fillOpacity: 0.85,
+                }}
+                eventHandlers={{
+                  click: () => setSelectedVille(ville.name),
+                }}
+                className={ville.name === selectedVille ? 'animate-pulse' : ''}
+              >
+                <LeafletTooltip 
+                  direction="top" 
+                  opacity={1} 
+                  className="rounded-lg shadow-xl border-none p-0 overflow-hidden"
+                  permanent={ville.name === selectedVille}
+                >
+                  <div className="bg-[#0A2342] text-white p-3 text-xs">
+                    <div className="font-black uppercase mb-1.5">{ville.name}</div>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-white/60">AQI:</span>
+                        <span 
+                          className="font-bold px-2 py-0.5 rounded"
+                          style={{ backgroundColor: getAQIColor(ville.aqi) }}
+                        >
+                          {ville.aqi} - {getAQILabel(ville.aqi)}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white/60">Temp:</span>
+                        <span className="font-bold text-orange-400">{ville.tempMax}°C</span>
+                      </div>
+                    </div>
+                  </div>
+                </LeafletTooltip>
+              </CircleMarker>
+            ))}
+          </MapContainer>
+
+          {/* Légende Overlay - compacte sur mobile */}
+          <div className="absolute bottom-3 left-3 md:bottom-6 md:left-6 z-[1000] bg-white/95 backdrop-blur-md p-2 md:p-4 rounded-lg md:rounded-xl shadow-2xl border border-white/50">
+            <p className="text-[9px] md:text-xs font-black uppercase text-[#0A2342] mb-1.5 md:mb-3 tracking-tight">Qualité Air</p>
+            <div className="flex flex-row md:flex-col gap-2 md:gap-2">
+              <div className="flex items-center gap-1 text-[8px] md:text-[10px] font-bold">
+                <div className="w-2.5 h-2.5 md:w-4 md:h-4 rounded-full" style={{ backgroundColor: '#14A44D' }}></div>
+                <span className="hidden md:inline">0-49: Bon</span>
+              </div>
+              <div className="flex items-center gap-1 text-[8px] md:text-[10px] font-bold">
+                <div className="w-2.5 h-2.5 md:w-4 md:h-4 rounded-full" style={{ backgroundColor: '#EAB308' }}></div>
+                <span className="hidden md:inline">50-99: Modéré</span>
+              </div>
+              <div className="flex items-center gap-1 text-[8px] md:text-[10px] font-bold">
+                <div className="w-2.5 h-2.5 md:w-4 md:h-4 rounded-full" style={{ backgroundColor: '#F97316' }}></div>
+                <span className="hidden md:inline">100-149: Mauvais</span>
+              </div>
+              <div className="flex items-center gap-1 text-[8px] md:text-[10px] font-bold">
+                <div className="w-2.5 h-2.5 md:w-4 md:h-4 rounded-full" style={{ backgroundColor: '#DC2626' }}></div>
+                <span className="hidden md:inline">150+: Critique</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* BOTTOM 40% - METRIC CARDS */}
+      <div className="w-full px-4 md:px-6 py-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+          {/* Temp Max Card */}
+          <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 border-l-4 border-orange-500 shadow-md hover:shadow-xl transition-shadow">
+            <div className="flex justify-between items-start mb-2 md:mb-4">
+              <div className="flex items-center gap-2 text-orange-600">
+                <Thermometer size={18} className="md:hidden" strokeWidth={2.5} />
+                <Thermometer size={24} className="hidden md:block" strokeWidth={2.5} />
+                <span className="text-[10px] md:text-xs font-black uppercase tracking-widest">Temp Max</span>
+              </div>
+              <div className="h-8 w-12 md:h-10 md:w-20 hidden sm:block">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={sparklineData}>
+                    <Line 
+                      type="monotone" 
+                      dataKey="value" 
+                      stroke="#F97316" 
+                      strokeWidth={2} 
+                      dot={false} 
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            <div>
+              <p className="text-2xl md:text-4xl font-black text-[#0A2342]">
+                {selectedCityData.tempMax}
+                <span className="text-sm md:text-lg font-bold text-gray-400 ml-1">°C</span>
+              </p>
+              <p className="text-[9px] md:text-[10px] text-gray-400 font-bold uppercase mt-1 md:mt-2 truncate">
+                {selectedCityData.name}
+              </p>
+            </div>
+          </div>
+
+          {/* Temp Min Card */}
+          <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 border-l-4 border-blue-500 shadow-md hover:shadow-xl transition-shadow">
+            <div className="flex justify-between items-start mb-2 md:mb-4">
+              <div className="flex items-center gap-2 text-blue-600">
+                <Thermometer size={18} className="md:hidden" strokeWidth={2.5} />
+                <Thermometer size={24} className="hidden md:block" strokeWidth={2.5} />
+                <span className="text-[10px] md:text-xs font-black uppercase tracking-widest">Temp Min</span>
+              </div>
+              <div className="h-8 w-12 md:h-10 md:w-20 hidden sm:block">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={sparklineData.map(d => ({ value: d.value - 10 }))}>
+                    <Line 
+                      type="monotone" 
+                      dataKey="value" 
+                      stroke="#3B82F6" 
+                      strokeWidth={2} 
+                      dot={false} 
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            <div>
+              <p className="text-2xl md:text-4xl font-black text-[#0A2342]">
+                {selectedCityData.tempMin}
+                <span className="text-sm md:text-lg font-bold text-gray-400 ml-1">°C</span>
+              </p>
+              <p className="text-[9px] md:text-[10px] text-gray-400 font-bold uppercase mt-1 md:mt-2">
+                Nuit: {selectedCityData.tempMin - 2}°C
+              </p>
+            </div>
+          </div>
+
+          {/* Wind Card */}
+          <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 border-l-4 border-teal-500 shadow-md hover:shadow-xl transition-shadow">
+            <div className="flex justify-between items-start mb-2 md:mb-4">
+              <div className="flex items-center gap-2 text-teal-600">
+                <Wind size={18} className="md:hidden" strokeWidth={2.5} />
+                <Wind size={24} className="hidden md:block" strokeWidth={2.5} />
+                <span className="text-[10px] md:text-xs font-black uppercase tracking-widest">Vent</span>
+              </div>
+              <div className="h-8 w-12 md:h-10 md:w-20 hidden sm:block">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={sparklineData.map(d => ({ value: selectedCityData.wind + Math.random() * 4 }))}>
+                    <Line 
+                      type="monotone" 
+                      dataKey="value" 
+                      stroke="#0D7377" 
+                      strokeWidth={2} 
+                      dot={false} 
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            <div>
+              <p className="text-2xl md:text-4xl font-black text-[#0A2342]">
+                {selectedCityData.wind}
+                <span className="text-sm md:text-lg font-bold text-gray-400 ml-1">km/h</span>
+              </p>
+              <p className="text-[9px] md:text-[10px] text-gray-400 font-bold uppercase mt-1 md:mt-2">
+                Rafales: {selectedCityData.wind + 12}km/h
+              </p>
+            </div>
+          </div>
+
+          {/* Precipitation Card */}
+          <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 border-l-4 border-blue-400 shadow-md hover:shadow-xl transition-shadow">
+            <div className="flex justify-between items-start mb-2 md:mb-4">
+              <div className="flex items-center gap-2 text-blue-600">
+                <CloudRain size={18} className="md:hidden" strokeWidth={2.5} />
+                <CloudRain size={24} className="hidden md:block" strokeWidth={2.5} />
+                <span className="text-[10px] md:text-xs font-black uppercase tracking-widest">Pluie</span>
+              </div>
+              <div className="h-8 w-12 md:h-10 md:w-20 hidden sm:block">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={sparklineData.map(d => ({ value: selectedCityData.precip + Math.random() * 5 }))}>
+                    <Line 
+                      type="monotone" 
+                      dataKey="value" 
+                      stroke="#60A5FA" 
+                      strokeWidth={2} 
+                      dot={false} 
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            <div>
+              <p className="text-2xl md:text-4xl font-black text-[#0A2342]">
+                {selectedCityData.precip}
+                <span className="text-sm md:text-lg font-bold text-gray-400 ml-1">mm</span>
+              </p>
+              <p className="text-[9px] md:text-[10px] text-gray-400 font-bold uppercase mt-1 md:mt-2">
+                24h cumulées
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* SECTION 2: AQI DÉTAILLÉ + CONSEILS SANTÉ */}
+      <div className="w-full px-4 md:px-6 py-6 bg-gray-50">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+          {/* Carte AQI Grande */}
+          <div className="lg:col-span-1 bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+            <div className="text-center">
+              <p className="text-xs font-black uppercase tracking-widest text-gray-500 mb-4">
+                Indice Qualité de l'Air
+              </p>
+              <div 
+                className="w-32 h-32 md:w-40 md:h-40 mx-auto rounded-full flex items-center justify-center mb-4"
+                style={{ 
+                  backgroundColor: `${getAQIColor(selectedCityData.aqi)}20`,
+                  border: `4px solid ${getAQIColor(selectedCityData.aqi)}`
+                }}
+              >
+                <div className="text-center">
+                  <p className="text-4xl md:text-5xl font-black" style={{ color: getAQIColor(selectedCityData.aqi) }}>
+                    {selectedCityData.aqi}
+                  </p>
+                  <p className="text-xs font-bold text-gray-500">AQI</p>
+                </div>
+              </div>
+              <div 
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-black"
+                style={{ 
+                  backgroundColor: `${getAQIColor(selectedCityData.aqi)}20`,
+                  color: getAQIColor(selectedCityData.aqi)
+                }}
+              >
+                <Activity size={16} />
+                {getAQILabel(selectedCityData.aqi)}
+              </div>
+              <p className="mt-4 text-lg font-black text-[#0A2342]">{selectedCityData.name}</p>
+            </div>
+          </div>
+
+          {/* Conseils Santé */}
+          <div className="lg:col-span-1 bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+            <div className="flex items-center gap-3 mb-4">
+              <div 
+                className="p-3 rounded-full"
+                style={{ backgroundColor: `${healthAdvice.color}20` }}
+              >
+                <HealthIcon size={24} style={{ color: healthAdvice.color }} />
+              </div>
+              <div>
+                <h3 className="text-sm font-black uppercase tracking-widest text-[#0A2342]">
+                  Conseils Santé
+                </h3>
+                <p className="text-xs text-gray-500">Recommandations du jour</p>
+              </div>
+            </div>
+            
+            <p className="text-sm text-gray-700 leading-relaxed mb-4">
+              {healthAdvice.message}
+            </p>
+            
+            {healthAdvice.groups.length > 0 && (
+              <div>
+                <p className="text-xs font-bold text-gray-500 mb-2">Groupes à risque :</p>
+                <div className="flex flex-wrap gap-2">
+                  {healthAdvice.groups.map((group, i) => (
+                    <span 
+                      key={i}
+                      className="text-xs font-bold px-3 py-1 rounded-full"
+                      style={{ 
+                        backgroundColor: `${healthAdvice.color}15`,
+                        color: healthAdvice.color
+                      }}
+                    >
+                      {group}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-2 text-xs text-gray-500">
+              <Heart size={14} className="text-red-400" />
+              <span>Protégez votre santé et celle de vos proches</span>
+            </div>
+          </div>
+
+          {/* Évolution 7 jours */}
+          <div className="lg:col-span-1 bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-sm font-black uppercase tracking-widest text-[#0A2342]">
+                  Tendance 7 jours
+                </h3>
+                <p className="text-xs text-gray-500">Évolution AQI à {selectedCityData.name}</p>
+              </div>
+              <div className="flex items-center gap-1 text-xs font-bold text-green-600">
+                <TrendingDown size={14} />
+                <span>-8%</span>
+              </div>
+            </div>
+            
+            <div className="h-[140px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={weeklyData}>
+                  <XAxis 
+                    dataKey="jour" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fontSize: 10, fontWeight: 600, fill: '#94A3B8' }}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      borderRadius: '8px', 
+                      border: 'none', 
+                      boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' 
+                    }}
+                    formatter={(value) => [`${value} AQI`, 'Qualité air']}
+                  />
+                  <Bar dataKey="aqi" radius={[4, 4, 0, 0]}>
+                    {weeklyData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={getAQIColor(entry.aqi)} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* SECTION 3: TOP VILLES POLLUÉES + VILLES PROPRES */}
+      <div className="w-full px-4 md:px-6 py-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          {/* Villes les plus polluées */}
+          <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-red-100 rounded-lg">
+                <AlertTriangle size={20} className="text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-black uppercase tracking-widest text-[#0A2342]">
+                  Alertes Pollution
+                </h3>
+                <p className="text-xs text-gray-500">Top 5 villes les plus polluées</p>
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              {topPolluted.map((ville, i) => (
+                <div 
+                  key={ville.name}
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 cursor-pointer transition-colors"
+                  onClick={() => setSelectedVille(ville.name)}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg font-black text-gray-300">#{i + 1}</span>
+                    <div>
+                      <p className="text-sm font-bold text-[#0A2342]">{ville.name}</p>
+                      <p className="text-[10px] text-gray-500">{ville.tempMax}°C • {ville.wind} km/h</p>
+                    </div>
+                  </div>
+                  <div 
+                    className="px-3 py-1 rounded-full text-xs font-black text-white"
+                    style={{ backgroundColor: getAQIColor(ville.aqi) }}
+                  >
+                    {ville.aqi}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Villes les plus propres */}
+          <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <Leaf size={20} className="text-green-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-black uppercase tracking-widest text-[#0A2342]">
+                  Air Pur
+                </h3>
+                <p className="text-xs text-gray-500">Top 5 villes les moins polluées</p>
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              {cleanestCities.map((ville, i) => (
+                <div 
+                  key={ville.name}
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 cursor-pointer transition-colors"
+                  onClick={() => setSelectedVille(ville.name)}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg font-black text-gray-300">#{i + 1}</span>
+                    <div>
+                      <p className="text-sm font-bold text-[#0A2342]">{ville.name}</p>
+                      <p className="text-[10px] text-gray-500">{ville.tempMax}°C • {ville.precip} mm pluie</p>
+                    </div>
+                  </div>
+                  <div 
+                    className="px-3 py-1 rounded-full text-xs font-black text-white"
+                    style={{ backgroundColor: getAQIColor(ville.aqi) }}
+                  >
+                    {ville.aqi}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* SECTION 4: STATISTIQUES NATIONALES */}
+      <div className="w-full px-4 md:px-6 py-6 bg-gradient-to-r from-[#0A2342] to-[#0D7377]">
+        <div className="text-center mb-6">
+          <h3 className="text-lg md:text-xl font-black text-white">Aperçu National</h3>
+          <p className="text-sm text-teal-200/70">Statistiques en temps réel sur 42 villes</p>
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
+            <p className="text-3xl md:text-4xl font-black text-white">42</p>
+            <p className="text-xs text-teal-200/70 font-bold uppercase mt-1">Villes</p>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
+            <p className="text-3xl md:text-4xl font-black text-green-400">
+              {villesCamerounData.filter(v => v.aqi < 50).length}
+            </p>
+            <p className="text-xs text-teal-200/70 font-bold uppercase mt-1">Air Bon</p>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
+            <p className="text-3xl md:text-4xl font-black text-orange-400">
+              {villesCamerounData.filter(v => v.aqi >= 100 && v.aqi < 150).length}
+            </p>
+            <p className="text-xs text-teal-200/70 font-bold uppercase mt-1">Air Mauvais</p>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
+            <p className="text-3xl md:text-4xl font-black text-red-400">
+              {villesCamerounData.filter(v => v.aqi >= 150).length}
+            </p>
+            <p className="text-xs text-teal-200/70 font-bold uppercase mt-1">Alerte</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Accueil;

@@ -60,8 +60,16 @@ body {
   min-width: 320px;
   min-height: 100vh;
   color: #0A2342;
-  background: linear-gradient(135deg, #f8fafc 0%, #e8f4f8 100%);
-  background-attachment: fixed;
+  background-color: #F8FAFC;
+  overflow-x: hidden;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+#root {
+  overflow-x: hidden;
 }
 
 /* Custom classes for AirWatch Climatique */
