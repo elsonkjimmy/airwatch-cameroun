@@ -1,0 +1,132 @@
+[
+  {
+    "name": "Est",
+    "cities": [
+      "Abong-Mbang",
+      "Batouri",
+      "Bertoua",
+      "Yokadouma"
+    ],
+    "cityCount": 4,
+    "avgAqi": 70,
+    "avgTemp": 24.1,
+    "avgPm25": 21.6
+  },
+  {
+    "name": "Centre",
+    "cities": [
+      "Akonolinga",
+      "Bafia",
+      "Mbalmayo",
+      "Yaounde"
+    ],
+    "cityCount": 4,
+    "avgAqi": 62,
+    "avgTemp": 23.8,
+    "avgPm25": 17.8
+  },
+  {
+    "name": "Sud",
+    "cities": [
+      "Ambam",
+      "Ebolowa",
+      "Kribi",
+      "Sangmelima"
+    ],
+    "cityCount": 4,
+    "avgAqi": 48,
+    "avgTemp": 24.6,
+    "avgPm25": 12.7
+  },
+  {
+    "name": "Ouest",
+    "cities": [
+      "Bafoussam",
+      "Dschang",
+      "Foumban",
+      "Mbouda"
+    ],
+    "cityCount": 4,
+    "avgAqi": 116,
+    "avgTemp": 21.0,
+    "avgPm25": 42.3
+  },
+  {
+    "name": "Nord-Ouest",
+    "cities": [
+      "Bamenda",
+      "Kumbo",
+      "Mbengwi",
+      "Wum"
+    ],
+    "cityCount": 4,
+    "avgAqi": 106,
+    "avgTemp": 20.3,
+    "avgPm25": 38.4
+  },
+  {
+    "name": "Sud-Ouest",
+    "cities": [
+      "Buea",
+      "Kumba",
+      "Limbe",
+      "Mamfe"
+    ],
+    "cityCount": 4,
+    "avgAqi": 71,
+    "avgTemp": 25.5,
+    "avgPm25": 21.8
+  },
+  {
+    "name": "Littoral",
+    "cities": [
+      "Douala",
+      "Edea",
+      "Loum",
+      "Nkongsamba"
+    ],
+    "cityCount": 4,
+    "avgAqi": 68,
+    "avgTemp": 24.5,
+    "avgPm25": 21.1
+  },
+  {
+    "name": "Nord",
+    "cities": [
+      "Garoua",
+      "Guider",
+      "Poli",
+      "Touboro"
+    ],
+    "cityCount": 4,
+    "avgAqi": 86,
+    "avgTemp": 27.9,
+    "avgPm25": 28.9
+  },
+  {
+    "name": "Extreme-Nord",
+    "cities": [
+      "Kousseri",
+      "Maroua",
+      "Mokolo",
+      "Yagoua"
+    ],
+    "cityCount": 4,
+    "avgAqi": 117,
+    "avgTemp": 27.2,
+    "avgPm25": 39.0
+  },
+  {
+    "name": "Adamaoua",
+    "cities": [
+      "Meiganga",
+      "Ngaoundere",
+      "Tibati",
+      "Tignere"
+    ],
+    "cityCount": 4,
+    "avgAqi": 70,
+    "avgTemp": 23.8,
+    "avgPm25": 21.2
+  }
+]

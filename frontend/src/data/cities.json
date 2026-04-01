@@ -1,0 +1,802 @@
+[
+  {
+    "name": "Abong-Mbang",
+    "region": "Est",
+    "latitude": 3.98,
+    "longitude": 13.17,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 31.0,
+      "tempMin": 19.7,
+      "tempMean": 23.8,
+      "apparentMax": 33.5,
+      "precipitation": 0.2,
+      "windSpeed": 11.0,
+      "windGusts": 28.4,
+      "pm25": 21.0,
+      "pm10": 29.0,
+      "aqi": 69,
+      "dust": 16.0
+    }
+  },
+  {
+    "name": "Akonolinga",
+    "region": "Centre",
+    "latitude": 3.77,
+    "longitude": 12.25,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 29.8,
+      "tempMin": 20.0,
+      "tempMean": 24.0,
+      "apparentMax": 33.4,
+      "precipitation": 0.2,
+      "windSpeed": 13.0,
+      "windGusts": 27.1,
+      "pm25": 19.0,
+      "pm10": 25.9,
+      "aqi": 64,
+      "dust": 13.9
+    }
+  },
+  {
+    "name": "Ambam",
+    "region": "Sud",
+    "latitude": 2.38,
+    "longitude": 11.28,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 29.0,
+      "tempMin": 20.5,
+      "tempMean": 23.5,
+      "apparentMax": 33.6,
+      "precipitation": 6.2,
+      "windSpeed": 12.3,
+      "windGusts": 30.1,
+      "pm25": 13.4,
+      "pm10": 17.7,
+      "aqi": 51,
+      "dust": 8.3
+    }
+  },
+  {
+    "name": "Bafia",
+    "region": "Centre",
+    "latitude": 4.75,
+    "longitude": 11.23,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 31.9,
+      "tempMin": 21.2,
+      "tempMean": null,
+      "apparentMax": 35.1,
+      "precipitation": 0.1,
+      "windSpeed": 12.0,
+      "windGusts": 27.2,
+      "pm25": 18.2,
+      "pm10": 27.3,
+      "aqi": 62,
+      "dust": 17.7
+    }
+  },
+  {
+    "name": "Bafoussam",
+    "region": "Ouest",
+    "latitude": 5.48,
+    "longitude": 10.42,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 26.7,
+      "tempMin": 16.0,
+      "tempMean": 21.7,
+      "apparentMax": 26.0,
+      "precipitation": 0.1,
+      "windSpeed": 14.0,
+      "windGusts": 40.6,
+      "pm25": 43.6,
+      "pm10": 59.9,
+      "aqi": 119,
+      "dust": 34.7
+    }
+  },
+  {
+    "name": "Bamenda",
+    "region": "Nord-Ouest",
+    "latitude": 5.96,
+    "longitude": 10.15,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 26.0,
+      "tempMin": 15.0,
+      "tempMean": 20.0,
+      "apparentMax": 27.2,
+      "precipitation": 0.2,
+      "windSpeed": 15.3,
+      "windGusts": 35.8,
+      "pm25": 42.5,
+      "pm10": 77.0,
+      "aqi": 115,
+      "dust": 72.8
+    }
+  },
+  {
+    "name": "Batouri",
+    "region": "Est",
+    "latitude": 4.43,
+    "longitude": 14.36,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 31.8,
+      "tempMin": 18.8,
+      "tempMean": 23.5,
+      "apparentMax": 34.3,
+      "precipitation": 0.1,
+      "windSpeed": 7.0,
+      "windGusts": 25.8,
+      "pm25": 22.8,
+      "pm10": 32.4,
+      "aqi": 73,
+      "dust": 19.0
+    }
+  },
+  {
+    "name": "Bertoua",
+    "region": "Est",
+    "latitude": 4.57,
+    "longitude": 13.68,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 32.0,
+      "tempMin": 18.4,
+      "tempMean": 24.4,
+      "apparentMax": 34.2,
+      "precipitation": 0.1,
+      "windSpeed": 8.7,
+      "windGusts": 32.8,
+      "pm25": 21.0,
+      "pm10": 30.0,
+      "aqi": 68,
+      "dust": 17.8
+    }
+  },
+  {
+    "name": "Buea",
+    "region": "Sud-Ouest",
+    "latitude": 4.15,
+    "longitude": 9.24,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 24.3,
+      "tempMin": 18.5,
+      "tempMean": 21.0,
+      "apparentMax": 27.0,
+      "precipitation": 0.4,
+      "windSpeed": 11.8,
+      "windGusts": 31.6,
+      "pm25": 15.7,
+      "pm10": 23.7,
+      "aqi": 57,
+      "dust": 13.8
+    }
+  },
+  {
+    "name": "Douala",
+    "region": "Littoral",
+    "latitude": 4.0511,
+    "longitude": 9.7679,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 31.1,
+      "tempMin": 24.0,
+      "tempMean": null,
+      "apparentMax": 36.3,
+      "precipitation": 1.1,
+      "windSpeed": 14.0,
+      "windGusts": 34.0,
+      "pm25": 17.1,
+      "pm10": 22.6,
+      "aqi": 60,
+      "dust": 8.5
+    }
+  },
+  {
+    "name": "Dschang",
+    "region": "Ouest",
+    "latitude": 5.4462,
+    "longitude": 10.0614,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": null,
+      "tempMin": null,
+      "tempMean": 19.5,
+      "apparentMax": 26.7,
+      "precipitation": 0.2,
+      "windSpeed": 15.4,
+      "windGusts": 40.2,
+      "pm25": 48.1,
+      "pm10": 72.0,
+      "aqi": 128,
+      "dust": 49.6
+    }
+  },
+  {
+    "name": "Ebolowa",
+    "region": "Sud",
+    "latitude": 2.91,
+    "longitude": 11.15,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 30.0,
+      "tempMin": 20.7,
+      "tempMean": 23.5,
+      "apparentMax": 33.7,
+      "precipitation": 1.1,
+      "windSpeed": 9.0,
+      "windGusts": 24.5,
+      "pm25": 13.3,
+      "pm10": 18.3,
+      "aqi": 50,
+      "dust": 9.8
+    }
+  },
+  {
+    "name": "Edea",
+    "region": "Littoral",
+    "latitude": 3.8,
+    "longitude": 10.13,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 30.4,
+      "tempMin": 23.6,
+      "tempMean": 26.0,
+      "apparentMax": 35.8,
+      "precipitation": 0.6,
+      "windSpeed": 16.0,
+      "windGusts": 27.7,
+      "pm25": 9.5,
+      "pm10": 14.4,
+      "aqi": 39,
+      "dust": 7.5
+    }
+  },
+  {
+    "name": "Foumban",
+    "region": "Ouest",
+    "latitude": 5.7167,
+    "longitude": 10.9,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 28.0,
+      "tempMin": 18.5,
+      "tempMean": 23.0,
+      "apparentMax": 29.1,
+      "precipitation": 0.1,
+      "windSpeed": 13.7,
+      "windGusts": 35.5,
+      "pm25": 34.4,
+      "pm10": 48.2,
+      "aqi": 98,
+      "dust": 28.3
+    }
+  },
+  {
+    "name": "Garoua",
+    "region": "Nord",
+    "latitude": 9.3017,
+    "longitude": 13.3922,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 36.8,
+      "tempMin": 22.4,
+      "tempMean": 30.2,
+      "apparentMax": 36.0,
+      "precipitation": 0.0,
+      "windSpeed": 11.5,
+      "windGusts": 35.6,
+      "pm25": 29.8,
+      "pm10": 85.8,
+      "aqi": 87,
+      "dust": 109.8
+    }
+  },
+  {
+    "name": "Guider",
+    "region": "Nord",
+    "latitude": 9.93,
+    "longitude": 13.94,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 35.5,
+      "tempMin": 22.0,
+      "tempMean": 28.9,
+      "apparentMax": 34.6,
+      "precipitation": 0.0,
+      "windSpeed": 13.5,
+      "windGusts": 36.6,
+      "pm25": 29.5,
+      "pm10": 82.2,
+      "aqi": 87,
+      "dust": 105.5
+    }
+  },
+  {
+    "name": "Kousseri",
+    "region": "Extreme-Nord",
+    "latitude": 12.0761,
+    "longitude": 15.0306,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 35.9,
+      "tempMin": 21.6,
+      "tempMean": 27.0,
+      "apparentMax": 35.0,
+      "precipitation": 0.0,
+      "windSpeed": 15.0,
+      "windGusts": 35.2,
+      "pm25": 43.2,
+      "pm10": 160.8,
+      "aqi": 116,
+      "dust": 229.1
+    }
+  },
+  {
+    "name": "Kribi",
+    "region": "Sud",
+    "latitude": 2.95,
+    "longitude": 9.91,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 29.0,
+      "tempMin": 23.4,
+      "tempMean": 26.0,
+      "apparentMax": 33.7,
+      "precipitation": 2.5,
+      "windSpeed": 13.8,
+      "windGusts": 34.2,
+      "pm25": 6.8,
+      "pm10": 9.5,
+      "aqi": 31,
+      "dust": 3.2
+    }
+  },
+  {
+    "name": "Kumba",
+    "region": "Sud-Ouest",
+    "latitude": 4.63,
+    "longitude": 9.44,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 30.1,
+      "tempMin": 22.8,
+      "tempMean": 26.0,
+      "apparentMax": 35.4,
+      "precipitation": 0.5,
+      "windSpeed": 17.0,
+      "windGusts": 34.7,
+      "pm25": 31.4,
+      "pm10": 47.9,
+      "aqi": 92,
+      "dust": 32.1
+    }
+  },
+  {
+    "name": "Kumbo",
+    "region": "Nord-Ouest",
+    "latitude": 6.2,
+    "longitude": 10.6667,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 24.0,
+      "tempMin": 14.2,
+      "tempMean": 18.0,
+      "apparentMax": 22.0,
+      "precipitation": 0.0,
+      "windSpeed": 16.0,
+      "windGusts": 39.7,
+      "pm25": 32.3,
+      "pm10": 49.8,
+      "aqi": 94,
+      "dust": 36.6
+    }
+  },
+  {
+    "name": "Limbe",
+    "region": "Sud-Ouest",
+    "latitude": 4.0167,
+    "longitude": 9.2,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 29.2,
+      "tempMin": 24.0,
+      "tempMean": 27.0,
+      "apparentMax": 34.6,
+      "precipitation": 0.2,
+      "windSpeed": 15.8,
+      "windGusts": 35.1,
+      "pm25": 15.7,
+      "pm10": 23.7,
+      "aqi": 57,
+      "dust": 13.8
+    }
+  },
+  {
+    "name": "Loum",
+    "region": "Littoral",
+    "latitude": 4.71,
+    "longitude": 9.73,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 30.5,
+      "tempMin": 22.6,
+      "tempMean": 25.2,
+      "apparentMax": 35.0,
+      "precipitation": 0.4,
+      "windSpeed": 9.7,
+      "windGusts": 22.7,
+      "pm25": 31.4,
+      "pm10": 47.9,
+      "aqi": 92,
+      "dust": 32.1
+    }
+  },
+  {
+    "name": "Mamfe",
+    "region": "Sud-Ouest",
+    "latitude": 5.75,
+    "longitude": 9.31,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 32.9,
+      "tempMin": 22.8,
+      "tempMean": 27.0,
+      "apparentMax": 37.0,
+      "precipitation": 0.2,
+      "windSpeed": null,
+      "windGusts": 22.5,
+      "pm25": 24.1,
+      "pm10": 43.8,
+      "aqi": 76,
+      "dust": 37.1
+    }
+  },
+  {
+    "name": "Maroua",
+    "region": "Extreme-Nord",
+    "latitude": 10.59,
+    "longitude": 14.32,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 34.0,
+      "tempMin": 21.8,
+      "tempMean": 27.6,
+      "apparentMax": 33.2,
+      "precipitation": 0.0,
+      "windSpeed": null,
+      "windGusts": 33.8,
+      "pm25": 32.5,
+      "pm10": 92.6,
+      "aqi": 94,
+      "dust": 119.8
+    }
+  },
+  {
+    "name": "Mbalmayo",
+    "region": "Centre",
+    "latitude": 3.5167,
+    "longitude": 11.5,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 29.5,
+      "tempMin": 20.5,
+      "tempMean": 23.7,
+      "apparentMax": 32.9,
+      "precipitation": 0.4,
+      "windSpeed": 11.2,
+      "windGusts": 27.3,
+      "pm25": 17.4,
+      "pm10": 23.9,
+      "aqi": 61,
+      "dust": 12.7
+    }
+  },
+  {
+    "name": "Mbengwi",
+    "region": "Nord-Ouest",
+    "latitude": 6.0167,
+    "longitude": 10.0,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 26.0,
+      "tempMin": 16.0,
+      "tempMean": 20.2,
+      "apparentMax": 29.0,
+      "precipitation": 0.1,
+      "windSpeed": 13.7,
+      "windGusts": 35.0,
+      "pm25": 42.5,
+      "pm10": 77.0,
+      "aqi": 115,
+      "dust": 72.8
+    }
+  },
+  {
+    "name": "Mbouda",
+    "region": "Ouest",
+    "latitude": 5.62,
+    "longitude": 10.25,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 25.8,
+      "tempMin": null,
+      "tempMean": 20.0,
+      "apparentMax": 26.0,
+      "precipitation": 0.1,
+      "windSpeed": 18.0,
+      "windGusts": 37.3,
+      "pm25": 43.6,
+      "pm10": 59.9,
+      "aqi": 119,
+      "dust": 34.7
+    }
+  },
+  {
+    "name": "Meiganga",
+    "region": "Adamaoua",
+    "latitude": 6.52,
+    "longitude": 14.29,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 32.0,
+      "tempMin": 18.8,
+      "tempMean": 24.0,
+      "apparentMax": 31.6,
+      "precipitation": 0.0,
+      "windSpeed": 16.3,
+      "windGusts": 36.7,
+      "pm25": 18.8,
+      "pm10": 34.9,
+      "aqi": 64,
+      "dust": 33.5
+    }
+  },
+  {
+    "name": "Mokolo",
+    "region": "Extreme-Nord",
+    "latitude": 10.7408,
+    "longitude": 13.7983,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 32.9,
+      "tempMin": 20.8,
+      "tempMean": 26.5,
+      "apparentMax": 31.2,
+      "precipitation": 0.0,
+      "windSpeed": null,
+      "windGusts": 35.7,
+      "pm25": 56.2,
+      "pm10": 263.6,
+      "aqi": 183,
+      "dust": 418.1
+    }
+  },
+  {
+    "name": "Ngaoundere",
+    "region": "Adamaoua",
+    "latitude": 7.32,
+    "longitude": 13.58,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 31.5,
+      "tempMin": 18.0,
+      "tempMean": 24.0,
+      "apparentMax": 29.8,
+      "precipitation": 0.0,
+      "windSpeed": 16.8,
+      "windGusts": 38.8,
+      "pm25": 20.0,
+      "pm10": 38.5,
+      "aqi": 67,
+      "dust": 38.8
+    }
+  },
+  {
+    "name": "Nkongsamba",
+    "region": "Littoral",
+    "latitude": 4.95,
+    "longitude": 9.93,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 27.2,
+      "tempMin": 19.0,
+      "tempMean": 22.2,
+      "apparentMax": 31.4,
+      "precipitation": 1.0,
+      "windSpeed": 6.0,
+      "windGusts": 27.5,
+      "pm25": 26.2,
+      "pm10": 39.4,
+      "aqi": 80,
+      "dust": 25.7
+    }
+  },
+  {
+    "name": "Poli",
+    "region": "Nord",
+    "latitude": 8.47,
+    "longitude": 13.24,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 33.9,
+      "tempMin": 23.5,
+      "tempMean": 28.1,
+      "apparentMax": 33.4,
+      "precipitation": 0.0,
+      "windSpeed": 11.0,
+      "windGusts": 33.4,
+      "pm25": 35.9,
+      "pm10": 72.3,
+      "aqi": 100,
+      "dust": 72.8
+    }
+  },
+  {
+    "name": "Sangmelima",
+    "region": "Sud",
+    "latitude": 2.93,
+    "longitude": 11.98,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 28.5,
+      "tempMin": 19.6,
+      "tempMean": 23.5,
+      "apparentMax": 33.1,
+      "precipitation": 1.5,
+      "windSpeed": 8.0,
+      "windGusts": 29.7,
+      "pm25": 17.2,
+      "pm10": 22.9,
+      "aqi": 60,
+      "dust": 11.4
+    }
+  },
+  {
+    "name": "Tibati",
+    "region": "Adamaoua",
+    "latitude": 6.46,
+    "longitude": 12.62,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 32.2,
+      "tempMin": null,
+      "tempMean": 23.8,
+      "apparentMax": 32.1,
+      "precipitation": 0.0,
+      "windSpeed": 14.3,
+      "windGusts": 35.6,
+      "pm25": 21.6,
+      "pm10": 35.9,
+      "aqi": 70,
+      "dust": 29.7
+    }
+  },
+  {
+    "name": "Tignere",
+    "region": "Adamaoua",
+    "latitude": 7.37,
+    "longitude": 12.65,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 30.0,
+      "tempMin": 19.0,
+      "tempMean": 23.5,
+      "apparentMax": 29.6,
+      "precipitation": 0.0,
+      "windSpeed": 15.3,
+      "windGusts": 35.6,
+      "pm25": 25.9,
+      "pm10": 50.4,
+      "aqi": 80,
+      "dust": 51.7
+    }
+  },
+  {
+    "name": "Touboro",
+    "region": "Nord",
+    "latitude": 7.76,
+    "longitude": 15.36,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 33.9,
+      "tempMin": 17.0,
+      "tempMean": 26.0,
+      "apparentMax": 34.1,
+      "precipitation": 0.0,
+      "windSpeed": 10.8,
+      "windGusts": 30.3,
+      "pm25": 22.6,
+      "pm10": 49.3,
+      "aqi": 72,
+      "dust": 54.2
+    }
+  },
+  {
+    "name": "Wum",
+    "region": "Nord-Ouest",
+    "latitude": 6.3833,
+    "longitude": 10.0667,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 28.3,
+      "tempMin": 16.5,
+      "tempMean": 21.2,
+      "apparentMax": 28.7,
+      "precipitation": 0.1,
+      "windSpeed": 17.0,
+      "windGusts": 34.1,
+      "pm25": 37.5,
+      "pm10": 76.0,
+      "aqi": 103,
+      "dust": 80.3
+    }
+  },
+  {
+    "name": "Yagoua",
+    "region": "Extreme-Nord",
+    "latitude": 10.34,
+    "longitude": 15.23,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 35.0,
+      "tempMin": 19.6,
+      "tempMean": 27.3,
+      "apparentMax": 34.3,
+      "precipitation": 0.0,
+      "windSpeed": 13.0,
+      "windGusts": 28.6,
+      "pm25": 26.8,
+      "pm10": 77.7,
+      "aqi": 81,
+      "dust": 100.4
+    }
+  },
+  {
+    "name": "Yaounde",
+    "region": "Centre",
+    "latitude": 3.848,
+    "longitude": 11.5021,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 27.6,
+      "tempMin": 21.0,
+      "tempMean": 24.0,
+      "apparentMax": 32.1,
+      "precipitation": 0.4,
+      "windSpeed": 13.5,
+      "windGusts": 34.1,
+      "pm25": 17.1,
+      "pm10": 23.7,
+      "aqi": 60,
+      "dust": 12.9
+    }
+  },
+  {
+    "name": "Yokadouma",
+    "region": "Est",
+    "latitude": 3.5167,
+    "longitude": 15.05,
+    "lastUpdate": "2025-12-20",
+    "current": {
+      "tempMax": 31.6,
+      "tempMin": 20.0,
+      "tempMean": 24.0,
+      "apparentMax": 35.1,
+      "precipitation": 0.2,
+      "windSpeed": 10.0,
+      "windGusts": 30.3,
+      "pm25": 21.8,
+      "pm10": 29.6,
+      "aqi": 70,
+      "dust": 15.5
+    }
+  }
+]

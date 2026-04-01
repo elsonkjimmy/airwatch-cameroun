@@ -7,19 +7,14 @@ import Analyse from './pages/Analyse';
 import SecteursAffectes from './pages/SecteursAffectes';
 import Comparaison from './pages/Comparaison';
 
-// Liste des 42 villes du Cameroun
-const villesCameroun = [
-  'Yaoundé', 'Douala', 'Maroua', 'Garoua', 'Ngaoundéré', 'Bafoussam', 
-  'Bamenda', 'Bertoua', 'Ebolowa', 'Buea', 'Kribi', 'Limbe', 'Kumba', 
-  'Edéa', 'Dschang', 'Foumban', 'Mbalmayo', 'Sangmelima', 'Abong-Mbang', 
-  'Batouri', 'Yokadouma', 'Mokolo', 'Kousseri', 'Mora', 'Guider', 'Kaélé', 
-  'Yagoua', 'Poli', 'Tcholliré', 'Meiganga', 'Tibati', 'Banyo', 'Tignère', 
-  'Mbouda', 'Bafang', 'Nkongsamba', 'Loum', 'Manjo', 'Tiko', 'Mamfé', 
-  'Fontem', 'Wum'
-];
+// Import des données réelles des villes
+import citiesData from './data/cities.json';
+
+// Liste des villes depuis le dataset
+const villesCameroun = citiesData.map(city => city.name).sort();
 
 function App() {
-  const [selectedVille, setSelectedVille] = useState('Maroua');
+  const [selectedVille, setSelectedVille] = useState('Yaounde');
 
   return (
     <BrowserRouter>

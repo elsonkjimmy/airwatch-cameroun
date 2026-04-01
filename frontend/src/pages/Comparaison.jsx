@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   LineChart,
   Line,
@@ -11,9 +11,51 @@ import {
   ReferenceLine,
   Label,
 } from 'recharts';
-import { TrendingUp, CloudRain, Wind, Thermometer, Activity } from 'lucide-react';
+import { TrendingUp, CloudRain, Wind, Thermometer, Activity, MapPin } from 'lucide-react';
 
-// Données de comparaison climat vs qualité de l'air pour différentes années
+// Import des données réelles
+import monthlyData from '../data/monthly.json';
+import citiesData from '../data/cities.json';
+
+const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+
+// Années disponibles
+const availableYears = [...new Set(monthlyData.map(d => d.year))].sort();
+
+// Annotations saisonnières
+const seasonAnnotations = {
+  1: '', 2: 'Harmattan', 3: 'Pic harmattan', 4: '', 5: '',
+  6: 'Saison des pluies', 7: '', 8: '', 9: '', 10: '', 11: 'Saison sèche', 12: ''
+};
+
+// Fonction pour générer les données de comparaison pour une année
+const getComparisonData = (year, city = null) => {
+  let yearData;
+  if (city) {
+    yearData = monthlyData.filter(d => d.year === year && d.city === city);
+  } else {
+    yearData = monthlyData.filter(d => d.year === year);
+  }
+  
+  return monthNames.map((month, idx) => {
+    const monthData = yearData.filter(d => d.month === idx + 1);
+    const avgTemp = monthData.reduce((sum, d) => sum + (d.tempMax || 0), 0) / monthData.length || 0;
+    const avgWind = monthData.reduce((sum, d) => sum + (d.windSpeed || 0), 0) / monthData.length || 0;
+    const avgPrecip = monthData.reduce((sum, d) => sum + (d.precipitation || 0), 0) / monthData.length || 0;
+    const avgPm25 = monthData.reduce((sum, d) => sum + (d.pm25 || 0), 0) / monthData.length || 0;
+    
+    return {
+      month,
+      temp: Math.round(avgTemp * 10) / 10,
+      wind: Math.round(avgWind * 10) / 10,
+      precip: Math.round(avgPrecip * 10) / 10,
+      pm25: Math.round(avgPm25),
+      annotation: seasonAnnotations[idx + 1] || '',
+    };
+  });
+};
+
+// Données fallback
 const comparisonData2024 = [
   {
     month: 'Jan',
@@ -240,11 +282,13 @@ const CustomDot = (props) => {
 };
 
 const Comparaison = () => {
-  const [year1, setYear1] = useState('2024');
-  const [year2, setYear2] = useState('2025');
+  const [year1, setYear1] = useState(2024);
+  const [year2, setYear2] = useState(2025);
+  const [selectedCity, setSelectedCity] = useState('');
 
-  const data1 = yearData[year1];
-  const data2 = yearData[year2];
+  // Obtenir les données de comparaison basées sur les sélections
+  const data1 = useMemo(() => getComparisonData(year1, selectedCity || null), [year1, selectedCity]);
+  const data2 = useMemo(() => getComparisonData(year2, selectedCity || null), [year2, selectedCity]);
 
   return (
     <div className="w-full px-6 py-8 space-y-12">
@@ -259,16 +303,31 @@ const Comparaison = () => {
       </div>
 
       {/* Year Selectors */}
-      <div className="flex items-center justify-center gap-6 bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+      <div className="flex flex-wrap items-center justify-center gap-6 bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+        {/* Sélecteur de ville */}
+        <div className="flex items-center gap-3">
+          <MapPin className="w-4 h-4 text-teal-600" />
+          <select
+            className="bg-white border-2 border-gray-200 rounded-full px-5 py-2 text-sm font-bold text-[#0A2342] outline-none focus:ring-2 focus:ring-teal-400/50 cursor-pointer"
+            value={selectedCity}
+            onChange={(e) => setSelectedCity(e.target.value)}
+          >
+            <option value="">Moyenne nationale</option>
+            {citiesData.map(city => (
+              <option key={city.name} value={city.name}>{city.name}</option>
+            ))}
+          </select>
+        </div>
+        
         <div className="flex items-center gap-3">
           <label className="text-sm font-bold text-gray-600">Année 1:</label>
           <select
             className="bg-white border-2 border-teal-500 rounded-full px-5 py-2 text-sm font-bold text-[#0A2342] outline-none focus:ring-2 focus:ring-teal-400/50 cursor-pointer"
             value={year1}
-            onChange={(e) => setYear1(e.target.value)}
+            onChange={(e) => setYear1(Number(e.target.value))}
           >
-            {['2020', '2021', '2022', '2023', '2024', '2025'].map((y) => (
-              <option key={y}>{y}</option>
+            {availableYears.map((y) => (
+              <option key={y} value={y}>{y}</option>
             ))}
           </select>
         </div>
@@ -280,10 +339,10 @@ const Comparaison = () => {
           <select
             className="bg-white border-2 border-orange-500 rounded-full px-5 py-2 text-sm font-bold text-[#0A2342] outline-none focus:ring-2 focus:ring-orange-400/50 cursor-pointer"
             value={year2}
-            onChange={(e) => setYear2(e.target.value)}
+            onChange={(e) => setYear2(Number(e.target.value))}
           >
-            {['2020', '2021', '2022', '2023', '2024', '2025'].map((y) => (
-              <option key={y}>{y}</option>
+            {availableYears.map((y) => (
+              <option key={y} value={y}>{y}</option>
             ))}
           </select>
         </div>

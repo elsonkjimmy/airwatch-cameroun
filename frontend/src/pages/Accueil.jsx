@@ -1,53 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Tooltip as LeafletTooltip } from 'react-leaflet';
 import { LineChart, BarChart, Bar, Line, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell } from 'recharts';
-import { Thermometer, Wind, CloudRain, Sun, AlertTriangle, Heart, Shield, Activity, TrendingUp, TrendingDown, Users, Leaf } from 'lucide-react';
+import { Thermometer, Wind, CloudRain, Sun, AlertTriangle, Heart, Shield, Activity, TrendingUp, TrendingDown, Users, Leaf, Droplets } from 'lucide-react';
 
-// 42 villes du Cameroun avec leurs coordonnées et données AQI/climatiques
-const villesCamerounData = [
-  { name: 'Yaoundé', pos: [3.8667, 11.5167], aqi: 110, tempMax: 28, tempMin: 19, wind: 12, precip: 5 },
-  { name: 'Douala', pos: [4.0511, 9.7679], aqi: 130, tempMax: 31, tempMin: 23, wind: 15, precip: 8 },
-  { name: 'Maroua', pos: [10.5913, 14.3159], aqi: 185, tempMax: 38, tempMin: 24, wind: 18, precip: 0 },
-  { name: 'Garoua', pos: [9.3017, 13.3978], aqi: 155, tempMax: 36, tempMin: 22, wind: 16, precip: 2 },
-  { name: 'Ngaoundéré', pos: [7.3167, 13.5833], aqi: 60, tempMax: 30, tempMin: 18, wind: 10, precip: 15 },
-  { name: 'Bafoussam', pos: [5.4781, 10.4186], aqi: 75, tempMax: 25, tempMin: 16, wind: 8, precip: 20 },
-  { name: 'Bamenda', pos: [5.9597, 10.1486], aqi: 70, tempMax: 26, tempMin: 15, wind: 9, precip: 25 },
-  { name: 'Bertoua', pos: [4.5806, 13.6842], aqi: 65, tempMax: 29, tempMin: 20, wind: 7, precip: 18 },
-  { name: 'Ebolowa', pos: [2.9000, 11.1500], aqi: 55, tempMax: 27, tempMin: 19, wind: 6, precip: 22 },
-  { name: 'Buea', pos: [4.1560, 9.2329], aqi: 50, tempMax: 24, tempMin: 18, wind: 12, precip: 30 },
-  { name: 'Kribi', pos: [2.9333, 9.9167], aqi: 45, tempMax: 28, tempMin: 22, wind: 14, precip: 28 },
-  { name: 'Limbe', pos: [4.0167, 9.2000], aqi: 48, tempMax: 26, tempMin: 21, wind: 13, precip: 32 },
-  { name: 'Kumba', pos: [4.6333, 9.4500], aqi: 68, tempMax: 27, tempMin: 20, wind: 10, precip: 24 },
-  { name: 'Edéa', pos: [3.8000, 10.1333], aqi: 72, tempMax: 29, tempMin: 21, wind: 11, precip: 19 },
-  { name: 'Dschang', pos: [5.4500, 10.0667], aqi: 52, tempMax: 23, tempMin: 14, wind: 8, precip: 26 },
-  { name: 'Foumban', pos: [5.7333, 10.9000], aqi: 78, tempMax: 28, tempMin: 17, wind: 9, precip: 16 },
-  { name: 'Mbalmayo', pos: [3.5167, 11.5000], aqi: 85, tempMax: 27, tempMin: 19, wind: 8, precip: 17 },
-  { name: 'Sangmelima', pos: [2.9333, 11.9833], aqi: 58, tempMax: 28, tempMin: 20, wind: 7, precip: 21 },
-  { name: 'Abong-Mbang', pos: [3.9833, 13.1833], aqi: 62, tempMax: 29, tempMin: 19, wind: 8, precip: 19 },
-  { name: 'Batouri', pos: [4.4333, 14.3667], aqi: 67, tempMax: 30, tempMin: 20, wind: 9, precip: 17 },
-  { name: 'Yokadouma', pos: [3.5167, 15.0500], aqi: 64, tempMax: 31, tempMin: 21, wind: 8, precip: 18 },
-  { name: 'Mokolo', pos: [10.7333, 13.8000], aqi: 175, tempMax: 37, tempMin: 23, wind: 17, precip: 1 },
-  { name: 'Kousseri', pos: [12.0833, 15.0333], aqi: 192, tempMax: 39, tempMin: 25, wind: 20, precip: 0 },
-  { name: 'Mora', pos: [11.0500, 14.1500], aqi: 180, tempMax: 38, tempMin: 24, wind: 18, precip: 0 },
-  { name: 'Guider', pos: [9.9333, 13.9500], aqi: 165, tempMax: 36, tempMin: 23, wind: 15, precip: 2 },
-  { name: 'Kaélé', pos: [10.0833, 14.4500], aqi: 170, tempMax: 37, tempMin: 23, wind: 16, precip: 1 },
-  { name: 'Yagoua', pos: [10.3333, 15.2333], aqi: 188, tempMax: 38, tempMin: 25, wind: 19, precip: 0 },
-  { name: 'Poli', pos: [8.7667, 13.2167], aqi: 145, tempMax: 35, tempMin: 21, wind: 14, precip: 3 },
-  { name: 'Tcholliré', pos: [8.3833, 14.1667], aqi: 140, tempMax: 34, tempMin: 21, wind: 13, precip: 4 },
-  { name: 'Meiganga', pos: [6.5167, 14.3000], aqi: 88, tempMax: 31, tempMin: 19, wind: 11, precip: 12 },
-  { name: 'Tibati', pos: [6.4667, 12.6167], aqi: 82, tempMax: 30, tempMin: 18, wind: 10, precip: 14 },
-  { name: 'Banyo', pos: [6.7500, 11.8167], aqi: 76, tempMax: 29, tempMin: 17, wind: 9, precip: 16 },
-  { name: 'Tignère', pos: [7.3667, 12.6667], aqi: 92, tempMax: 32, tempMin: 19, wind: 11, precip: 11 },
-  { name: 'Mbouda', pos: [5.6167, 10.2500], aqi: 74, tempMax: 24, tempMin: 15, wind: 8, precip: 23 },
-  { name: 'Bafang', pos: [5.1667, 10.1667], aqi: 79, tempMax: 26, tempMin: 16, wind: 9, precip: 21 },
-  { name: 'Nkongsamba', pos: [4.9500, 9.9333], aqi: 81, tempMax: 27, tempMin: 19, wind: 10, precip: 25 },
-  { name: 'Loum', pos: [4.7167, 9.7333], aqi: 94, tempMax: 29, tempMin: 21, wind: 11, precip: 20 },
-  { name: 'Manjo', pos: [4.7833, 9.6167], aqi: 88, tempMax: 28, tempMin: 20, wind: 10, precip: 22 },
-  { name: 'Tiko', pos: [4.0667, 9.3600], aqi: 53, tempMax: 27, tempMin: 21, wind: 12, precip: 31 },
-  { name: 'Mamfé', pos: [5.7667, 9.3000], aqi: 71, tempMax: 28, tempMin: 20, wind: 9, precip: 27 },
-  { name: 'Fontem', pos: [5.5667, 9.9167], aqi: 56, tempMax: 25, tempMin: 17, wind: 7, precip: 29 },
-  { name: 'Wum', pos: [6.3833, 10.0667], aqi: 69, tempMax: 26, tempMin: 16, wind: 8, precip: 26 },
-];
+// Import des données réelles
+import citiesData from '../data/cities.json';
+import regionsData from '../data/regions.json';
+
+// Transformer les données pour l'affichage
+const villesCamerounData = citiesData.map(city => ({
+  name: city.name,
+  region: city.region,
+  pos: [city.latitude, city.longitude],
+  aqi: city.current.aqi || 50,
+  tempMax: city.current.tempMax || 25,
+  tempMin: city.current.tempMin || 18,
+  tempMean: city.current.tempMean || 22,
+  wind: city.current.windSpeed || 10,
+  windGusts: city.current.windGusts || 20,
+  precip: city.current.precipitation || 0,
+  pm25: city.current.pm25 || 15,
+  pm10: city.current.pm10 || 20,
+  dust: city.current.dust || 10,
+  apparentMax: city.current.apparentMax || 28,
+  lastUpdate: city.lastUpdate
+}));
 
 const getAQIColor = (aqi) => {
   if (aqi >= 150) return '#DC2626'; // Rouge - Critique

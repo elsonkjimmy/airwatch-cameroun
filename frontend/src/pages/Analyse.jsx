@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   ComposedChart,
   LineChart,
@@ -16,119 +16,50 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from 'recharts';
-import { TrendingUp, TrendingDown, Calendar } from 'lucide-react';
+import { TrendingUp, TrendingDown, Calendar, MapPin } from 'lucide-react';
 
-// Données mensuelles pour les corrélations
-const correlationData = [
-  { month: 'Jan', pm25: 90, temp: 24, wind: 15, correlation: 0.73 },
-  { month: 'Fév', pm25: 110, temp: 26, wind: 18, correlation: 0.73 },
-  { month: 'Mar', pm25: 140, temp: 31, wind: 25, correlation: 0.73 },
-  { month: 'Avr', pm25: 85, temp: 35, wind: 12, correlation: 0.73 },
-  { month: 'Mai', pm25: 60, temp: 33, wind: 10, correlation: 0.73 },
-  { month: 'Juin', pm25: 45, temp: 30, wind: 8, correlation: 0.73 },
-  { month: 'Juil', pm25: 35, temp: 27, wind: 6, correlation: 0.73 },
-  { month: 'Août', pm25: 30, temp: 26, wind: 7, correlation: 0.73 },
-  { month: 'Sep', pm25: 40, temp: 28, wind: 5, correlation: 0.73 },
-  { month: 'Oct', pm25: 55, temp: 30, wind: 6, correlation: 0.73 },
-  { month: 'Nov', pm25: 70, temp: 28, wind: 10, correlation: 0.73 },
-  { month: 'Déc', pm25: 85, temp: 25, wind: 12, correlation: 0.73 },
-];
+// Import des données réelles
+import monthlyData from '../data/monthly.json';
+import citiesData from '../data/cities.json';
 
-// Données scatter pour PM2.5 vs Wind
-const scatterData = correlationData.map((d) => ({
-  wind: d.wind,
-  pm25: d.pm25,
-}));
+const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
 
-// Données annuelles par année (2020-2025)
-const yearlyData = {
-  2020: [
-    { month: 'Jan', temp: 22 },
-    { month: 'Fév', temp: 24 },
-    { month: 'Mar', temp: 27 },
-    { month: 'Avr', temp: 31 },
-    { month: 'Mai', temp: 30 },
-    { month: 'Juin', temp: 28 },
-    { month: 'Juil', temp: 26 },
-    { month: 'Août', temp: 25 },
-    { month: 'Sep', temp: 26 },
-    { month: 'Oct', temp: 28 },
-    { month: 'Nov', temp: 26 },
-    { month: 'Déc', temp: 23 },
-  ],
-  2021: [
-    { month: 'Jan', temp: 23 },
-    { month: 'Fév', temp: 25 },
-    { month: 'Mar', temp: 28 },
-    { month: 'Avr', temp: 32 },
-    { month: 'Mai', temp: 31 },
-    { month: 'Juin', temp: 29 },
-    { month: 'Juil', temp: 27 },
-    { month: 'Août', temp: 26 },
-    { month: 'Sep', temp: 27 },
-    { month: 'Oct', temp: 29 },
-    { month: 'Nov', temp: 26 },
-    { month: 'Déc', temp: 24 },
-  ],
-  2022: [
-    { month: 'Jan', temp: 23 },
-    { month: 'Fév', temp: 24 },
-    { month: 'Mar', temp: 28 },
-    { month: 'Avr', temp: 32 },
-    { month: 'Mai', temp: 31 },
-    { month: 'Juin', temp: 29 },
-    { month: 'Juil', temp: 27 },
-    { month: 'Août', temp: 26 },
-    { month: 'Sep', temp: 27 },
-    { month: 'Oct', temp: 29 },
-    { month: 'Nov', temp: 27 },
-    { month: 'Déc', temp: 24 },
-  ],
-  2023: [
-    { month: 'Jan', temp: 23 },
-    { month: 'Fév', temp: 25 },
-    { month: 'Mar', temp: 29 },
-    { month: 'Avr', temp: 33 },
-    { month: 'Mai', temp: 32 },
-    { month: 'Juin', temp: 29 },
-    { month: 'Juil', temp: 28 },
-    { month: 'Août', temp: 26 },
-    { month: 'Sep', temp: 27 },
-    { month: 'Oct', temp: 29 },
-    { month: 'Nov', temp: 26 },
-    { month: 'Déc', temp: 23 },
-  ],
-  2024: [
-    { month: 'Jan', temp: 22 },
-    { month: 'Fév', temp: 25 },
-    { month: 'Mar', temp: 28 },
-    { month: 'Avr', temp: 33 },
-    { month: 'Mai', temp: 32 },
-    { month: 'Juin', temp: 29 },
-    { month: 'Juil', temp: 28 },
-    { month: 'Août', temp: 26 },
-    { month: 'Sep', temp: 27 },
-    { month: 'Oct', temp: 29 },
-    { month: 'Nov', temp: 26 },
-    { month: 'Déc', temp: 23 },
-  ],
-  2025: [
-    { month: 'Jan', temp: 24 },
-    { month: 'Fév', temp: 26 },
-    { month: 'Mar', temp: 31 },
-    { month: 'Avr', temp: 35 },
-    { month: 'Mai', temp: 33 },
-    { month: 'Juin', temp: 30 },
-    { month: 'Juil', temp: 27 },
-    { month: 'Août', temp: 26 },
-    { month: 'Sep', temp: 28 },
-    { month: 'Oct', temp: 30 },
-    { month: 'Nov', temp: 28 },
-    { month: 'Déc', temp: 25 },
-  ],
+// Fonction pour préparer les données de corrélation (moyennes nationales)
+const getCorrelationData = (year) => {
+  const yearData = monthlyData.filter(d => d.year === year);
+  return monthNames.map((month, idx) => {
+    const monthData = yearData.filter(d => d.month === idx + 1);
+    const avgPm25 = monthData.reduce((sum, d) => sum + (d.pm25 || 0), 0) / monthData.length || 0;
+    const avgTemp = monthData.reduce((sum, d) => sum + (d.tempMax || 0), 0) / monthData.length || 0;
+    const avgWind = monthData.reduce((sum, d) => sum + (d.windSpeed || 0), 0) / monthData.length || 0;
+    return {
+      month,
+      pm25: Math.round(avgPm25),
+      temp: Math.round(avgTemp * 10) / 10,
+      wind: Math.round(avgWind * 10) / 10,
+    };
+  });
 };
 
-// Données heatmap (365 jours)
+// Fonction pour obtenir les données d'une ville par année
+const getCityYearlyData = (city, year) => {
+  const cityYearData = monthlyData.filter(d => d.city === city && d.year === year);
+  return monthNames.map((month, idx) => {
+    const data = cityYearData.find(d => d.month === idx + 1);
+    return {
+      month,
+      temp: data?.tempMax || null,
+      pm25: data?.pm25 || null,
+      precipitation: data?.precipitation || null,
+      windSpeed: data?.windSpeed || null,
+    };
+  });
+};
+
+// Années disponibles
+const availableYears = [...new Set(monthlyData.map(d => d.year))].sort();
+
+// Générer heatmap data
 const generateHeatmapData = () => {
   const data = [];
   for (let i = 0; i < 365; i++) {
@@ -151,12 +82,35 @@ const getHeatmapColor = (val) => {
 };
 
 const Analyse = () => {
-  const [selectedYear, setSelectedYear] = useState('2025');
-  const [compareYear, setCompareYear] = useState('2024');
+  const [selectedYear, setSelectedYear] = useState(2025);
+  const [compareYear, setCompareYear] = useState(2024);
   const [showComparison, setShowComparison] = useState(false);
+  const [selectedCity, setSelectedCity] = useState('');
 
-  const currentYearData = yearlyData[selectedYear];
-  const compareYearData = yearlyData[compareYear];
+  // Données de corrélation pour l'année sélectionnée
+  const correlationData = useMemo(() => getCorrelationData(selectedYear), [selectedYear]);
+  
+  // Données scatter pour PM2.5 vs Wind
+  const scatterData = useMemo(() => correlationData.map(d => ({
+    wind: d.wind,
+    pm25: d.pm25,
+    month: d.month,
+  })), [correlationData]);
+  
+  // Données annuelles
+  const currentYearData = useMemo(() => {
+    if (selectedCity) {
+      return getCityYearlyData(selectedCity, selectedYear);
+    }
+    return getCorrelationData(selectedYear);
+  }, [selectedYear, selectedCity]);
+  
+  const compareYearData = useMemo(() => {
+    if (selectedCity) {
+      return getCityYearlyData(selectedCity, compareYear);
+    }
+    return getCorrelationData(compareYear);
+  }, [compareYear, selectedCity]);
 
   // Merge data for comparison
   const comparisonData = currentYearData.map((d, i) => ({
@@ -365,16 +319,31 @@ const Analyse = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
+            {/* Sélecteur de ville */}
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-teal-600" />
+              <select
+                className="bg-white border-2 border-gray-200 rounded-full px-4 py-2 text-sm font-bold text-[#0A2342] outline-none focus:ring-2 focus:ring-teal-400/50 cursor-pointer"
+                value={selectedCity}
+                onChange={(e) => setSelectedCity(e.target.value)}
+              >
+                <option value="">Moyenne nationale</option>
+                {citiesData.map(city => (
+                  <option key={city.name} value={city.name}>{city.name}</option>
+                ))}
+              </select>
+            </div>
+            
             <div className="flex items-center gap-2">
               <label className="text-sm font-bold text-gray-600">Année:</label>
               <select
                 className="bg-white border-2 border-gray-200 rounded-full px-4 py-2 text-sm font-bold text-[#0A2342] outline-none focus:ring-2 focus:ring-teal-400/50 cursor-pointer"
                 value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
+                onChange={(e) => setSelectedYear(Number(e.target.value))}
               >
-                {['2020', '2021', '2022', '2023', '2024', '2025'].map((y) => (
-                  <option key={y}>{y}</option>
+                {availableYears.map((y) => (
+                  <option key={y} value={y}>{y}</option>
                 ))}
               </select>
             </div>
@@ -386,7 +355,17 @@ const Analyse = () => {
                 onChange={(e) => setShowComparison(e.target.checked)}
                 className="w-4 h-4 text-teal-500 rounded focus:ring-2 focus:ring-teal-400"
               />
-              <span className="text-sm font-bold text-gray-600">Comparer avec {compareYear}</span>
+              <span className="text-sm font-bold text-gray-600">Comparer avec</span>
+              <select
+                className="bg-white border border-gray-200 rounded-full px-3 py-1 text-sm font-bold text-[#0A2342] outline-none focus:ring-2 focus:ring-teal-400/50 cursor-pointer"
+                value={compareYear}
+                onChange={(e) => setCompareYear(Number(e.target.value))}
+                disabled={!showComparison}
+              >
+                {availableYears.filter(y => y !== selectedYear).map((y) => (
+                  <option key={y} value={y}>{y}</option>
+                ))}
+              </select>
             </label>
           </div>
         </div>

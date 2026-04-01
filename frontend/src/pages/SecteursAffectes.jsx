@@ -1,9 +1,89 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { MapContainer, TileLayer, Polygon, Tooltip as LeafletTooltip } from 'react-leaflet';
 import { Heart, Wind, Sprout, Users, AlertTriangle, Activity } from 'lucide-react';
 
-// Données des régions du Cameroun avec zones affectées
-const regionsData = [
+// Import des données réelles des régions
+import regionsDataRaw from '../data/regions.json';
+
+// Mapping des noms de régions du dataset vers les noms affichés
+const regionDisplayNames = {
+  'Extreme-Nord': 'Extrême-Nord',
+  'Nord-Ouest': 'Nord-Ouest',
+  'Sud-Ouest': 'Sud-Ouest',
+};
+
+// Coordonnées des polygones des régions
+const regionPolygons = {
+  'Extreme-Nord': [[12.5, 13.5], [12.5, 15.5], [10.0, 15.5], [10.0, 13.5]],
+  'Nord': [[10.0, 12.5], [10.0, 15.0], [8.5, 15.0], [8.5, 12.5]],
+  'Adamaoua': [[8.5, 12.0], [8.5, 15.0], [6.0, 15.0], [6.0, 12.0]],
+  'Centre': [[5.0, 10.0], [5.0, 13.0], [3.0, 13.0], [3.0, 10.0]],
+  'Littoral': [[5.0, 9.0], [5.0, 11.0], [4.0, 11.0], [4.0, 9.0]],
+  'Ouest': [[6.0, 9.5], [6.0, 11.0], [5.0, 11.0], [5.0, 9.5]],
+  'Nord-Ouest': [[7.0, 9.5], [7.0, 11.0], [6.0, 11.0], [6.0, 9.5]],
+  'Sud-Ouest': [[5.0, 8.5], [5.0, 10.0], [4.0, 10.0], [4.0, 8.5]],
+  'Sud': [[3.5, 10.0], [3.5, 12.5], [2.0, 12.5], [2.0, 10.0]],
+  'Est': [[5.0, 13.0], [5.0, 16.0], [2.0, 16.0], [2.0, 13.0]],
+};
+
+// Populations estimées par région
+const regionPopulations = {
+  'Extreme-Nord': 3800000,
+  'Nord': 2500000,
+  'Adamaoua': 1200000,
+  'Centre': 4800000,
+  'Littoral': 3500000,
+  'Ouest': 1900000,
+  'Nord-Ouest': 1900000,
+  'Sud-Ouest': 1500000,
+  'Sud': 750000,
+  'Est': 850000,
+};
+
+// Fonction pour déterminer le niveau AQI
+const getAqiLevel = (aqi) => {
+  if (aqi >= 150) return { level: 'Critique', color: '#DC2626' };
+  if (aqi >= 100) return { level: 'Mauvais', color: '#F97316' };
+  if (aqi >= 50) return { level: 'Modéré', color: '#EAB308' };
+  return { level: 'Bon', color: '#14A44D' };
+};
+
+// Fonction pour déterminer le risque principal basé sur les données
+const getMainRisk = (region) => {
+  const aqi = region.avgAqi || 0;
+  const temp = region.avgTempMax || 0;
+  
+  if (aqi > 100) return { risk: 'Respiratoire', icon: Wind, description: 'Pollution élevée affectant les voies respiratoires' };
+  if (temp > 35) return { risk: 'Cardiovasculaire', icon: Heart, description: 'Stress thermique élevé impactant le système cardiovasculaire' };
+  return { risk: 'Agricole', icon: Sprout, description: 'Impact modéré sur l\'agriculture et l\'écosystème' };
+};
+
+// Transformer les données brutes en format utilisable
+const regionsData = regionsDataRaw.map(region => {
+  const aqiInfo = getAqiLevel(region.avgAqi || 0);
+  const riskInfo = getMainRisk(region);
+  const displayName = regionDisplayNames[region.name] || region.name;
+  
+  return {
+    name: displayName,
+    originalName: region.name,
+    center: [region.centerLat || 5, region.centerLon || 12],
+    polygon: regionPolygons[region.name] || [[5, 10], [5, 12], [4, 12], [4, 10]],
+    avgPollution: Math.round(region.avgAqi || 0),
+    avgPm25: Math.round(region.avgPm25 || 0),
+    avgTemp: Math.round(region.avgTempMax || 0),
+    aqiLevel: aqiInfo.level,
+    population: regionPopulations[region.name] || 1000000,
+    mainRisk: riskInfo.risk,
+    icon: riskInfo.icon,
+    color: aqiInfo.color,
+    description: riskInfo.description,
+    cities: region.cities || [],
+  };
+});
+
+// Données hardcodées en fallback si les données JSON sont vides
+const fallbackRegionsData = [
   {
     name: 'Extrême-Nord',
     center: [10.5, 14.5],
