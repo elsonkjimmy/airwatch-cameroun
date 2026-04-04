@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { CloudSun, Home, BarChart3, MapPinned, GitCompare, Menu, X, MapPin } from 'lucide-react';
+import OfflineIndicator from './OfflineIndicator';
 
 const Navbar = ({ selectedVille, setSelectedVille, villesCameroun }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -46,8 +47,13 @@ const Navbar = ({ selectedVille, setSelectedVille, villesCameroun }) => {
           ))}
         </nav>
 
-        {/* Right side: City + Mobile Menu */}
+        {/* Right side: Offline + City + Mobile Menu */}
         <div className="flex items-center gap-2">
+          {/* Offline Indicator */}
+          <div className="hidden sm:block">
+            <OfflineIndicator />
+          </div>
+
           {/* City Selector Pill */}
           <div className="flex items-center gap-1 bg-white/95 rounded-full pl-2 pr-1 py-1 shadow-md">
             <MapPin size={14} className="text-teal-600 shrink-0" />
