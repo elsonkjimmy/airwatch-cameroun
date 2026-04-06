@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Tooltip as LeafletTooltip } from 'react-leaflet';
 import { LineChart, Line, Area, BarChart, Bar, ComposedChart, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from 'recharts';
-import { MapPin, Wind, Thermometer, CloudRain, Sun, Activity, Calendar, CloudSun, AlertTriangle, Sprout, Compass } from 'lucide-react';
+import { MapPin, Wind, Thermometer, CloudRain, Sun, Activity, Calendar, AlertTriangle, Sprout, Compass } from 'lucide-react';
 
 const ClimateExplorer = () => {
   // --- ÉTATS SÉLECTEURS ---
@@ -74,33 +74,32 @@ const ClimateExplorer = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-gray-800 font-inter animate-fade-in flex flex-col">
-      
-      {/* --- HEADER PRINCIPAL --- */}
-      <header className="bg-gradient-to-r from-[#0A2342] to-[#0D7377] py-4 px-6 sticky top-0 z-50 shadow-lg shrink-0">
-        <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <CloudSun className="text-white" size={32} strokeWidth={2.5} />
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-[#0A2342] animate-pulse-dot"></div>
-            </div>
-            <h1 className="text-2xl font-black text-white tracking-tight">AirWatch <span className="text-teal-200">Cameroun</span></h1>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <select className="bg-white/95 backdrop-blur-sm border-none rounded-full px-5 py-2 text-sm font-bold text-[#0A2342] shadow-md outline-none focus:ring-2 focus:ring-teal-400/50 appearance-none cursor-pointer" value={selectedVille} onChange={(e) => setSelectedVille(e.target.value)}>
-              {villesCameroun.map(v => <option key={v}>{v}</option>)}
-            </select>
-            <select className="bg-white/95 backdrop-blur-sm border-none rounded-full px-5 py-2 text-sm font-bold text-[#0A2342] shadow-md outline-none focus:ring-2 focus:ring-teal-400/50 appearance-none cursor-pointer" value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)}>
-              {['2020','2021','2022','2023','2024','2025'].map(y => <option key={y}>{y}</option>)}
-            </select>
-            <select className="bg-white/95 backdrop-blur-sm border-none rounded-full px-5 py-2 text-sm font-bold text-[#0A2342] shadow-md outline-none focus:ring-2 focus:ring-teal-400/50 appearance-none cursor-pointer" value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)}>
-              <option>All months</option><option>01</option><option>02</option>
-            </select>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#F8FAFC] text-gray-800 font-inter animate-fade-in">
 
       <main className="max-w-[1400px] mx-auto px-6 py-8 space-y-12 flex-1">
+        {/* --- FILTRES CLIMAT --- */}
+        <section className="bg-gradient-to-r from-[#0A2342] to-[#0D7377] rounded-2xl p-4 md:p-5 shadow-lg">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <h1 className="text-white text-lg md:text-2xl font-black tracking-tight">Explorateur Climat</h1>
+            <div className="flex flex-wrap items-center gap-3">
+              <select className="bg-white/95 backdrop-blur-sm border-none rounded-full px-5 py-2 text-sm font-bold text-[#0A2342] shadow-md outline-none focus:ring-2 focus:ring-teal-400/50 appearance-none cursor-pointer" value={selectedVille} onChange={(e) => setSelectedVille(e.target.value)}>
+                {villesCameroun.map(v => <option key={v}>{v}</option>)}
+              </select>
+              <select className="bg-white/95 backdrop-blur-sm border-none rounded-full px-5 py-2 text-sm font-bold text-[#0A2342] shadow-md outline-none focus:ring-2 focus:ring-teal-400/50 appearance-none cursor-pointer" value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)}>
+                {['2020','2021','2022','2023','2024','2025'].map(y => <option key={y}>{y}</option>)}
+              </select>
+              <select className="bg-white/95 backdrop-blur-sm border-none rounded-full px-5 py-2 text-sm font-bold text-[#0A2342] shadow-md outline-none focus:ring-2 focus:ring-teal-400/50 appearance-none cursor-pointer" value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)}>
+                <option>All months</option><option>01</option><option>02</option>
+              </select>
+              <select className="bg-white/95 backdrop-blur-sm border-none rounded-full px-5 py-2 text-sm font-bold text-[#0A2342] shadow-md outline-none focus:ring-2 focus:ring-teal-400/50 appearance-none cursor-pointer" value={selectedDay} onChange={(e) => setSelectedDay(e.target.value)}>
+                {Array.from({ length: 31 }, (_, i) => {
+                  const day = String(i + 1).padStart(2, '0');
+                  return <option key={day}>{day}</option>;
+                })}
+              </select>
+            </div>
+          </div>
+        </section>
         
         {/* === SECTION 1 : CONDITIONS ACTUELLES (Hero Layout 40/60) === */}
         <div className="space-y-6">
@@ -445,25 +444,6 @@ const ClimateExplorer = () => {
         </div>
       </main>
 
-      <footer className="bg-[#0A2342] py-16 px-6 mt-20 shrink-0">
-        <div className="max-w-[1400px] mx-auto flex flex-col items-center gap-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/10 rounded-xl backdrop-blur-sm">
-              <CloudSun className="text-teal-400" size={32} />
-            </div>
-            <span className="text-2xl font-black text-white tracking-tighter">AirWatch <span className="text-teal-400">Cameroun</span></span>
-          </div>
-          <div className="h-px w-20 bg-teal-500/30"></div>
-          <p className="text-teal-100/60 text-sm font-bold tracking-wide text-center">IndabaX Cameroun 2026 Hackathon — TechSpine Initiative</p>
-          <div className="flex flex-wrap justify-center gap-4 text-[10px] text-white/30 uppercase font-black tracking-[0.2em]">
-            <span>Données climatiques & sanitaires</span>
-            <span className="text-teal-500/50">•</span>
-            <span>Période 2020-2025</span>
-            <span className="text-teal-500/50">•</span>
-            <span>42 villes couvertes</span>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };
