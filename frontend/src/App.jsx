@@ -6,6 +6,7 @@ import Accueil from './pages/Accueil';
 import Analyse from './pages/Analyse';
 import SecteursAffectes from './pages/SecteursAffectes';
 import Comparaison from './pages/Comparaison';
+import ClimateExplorer from './pages/ClimateExplorer';
 
 // Import des données réelles des villes
 import citiesData from './data/cities.json';
@@ -39,6 +40,7 @@ function App() {
             <Route path="/analyse" element={<Analyse />} />
             <Route path="/secteurs" element={<SecteursAffectes />} />
             <Route path="/comparaison" element={<Comparaison />} />
+            <Route path="/climate" element={<ClimateExplorer />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>

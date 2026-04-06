@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { CloudSun, Home, BarChart3, MapPinned, GitCompare, Menu, X, MapPin } from 'lucide-react';
+import { CloudSun, Home, BarChart3, MapPinned, GitCompare, Menu, X, MapPin, Activity } from 'lucide-react';
 import OfflineIndicator from './OfflineIndicator';
 
 const Navbar = ({ selectedVille, setSelectedVille, villesCameroun }) => {
@@ -9,8 +9,9 @@ const Navbar = ({ selectedVille, setSelectedVille, villesCameroun }) => {
   const navItems = [
     { to: '/', label: 'Accueil', icon: Home },
     { to: '/analyse', label: 'Analyse', icon: BarChart3 },
+    { to: '/climate', label: 'Climat', icon: Activity },
     { to: '/secteurs', label: 'Secteurs', icon: MapPinned },
-    { to: '/comparaison', label: 'Comparaison', icon: GitCompare },
+    { to: '/comparaison', label: 'Tendances', icon: GitCompare },
   ];
 
   return (
@@ -81,7 +82,7 @@ const Navbar = ({ selectedVille, setSelectedVille, villesCameroun }) => {
       {/* Mobile Navigation Menu */}
       {mobileMenuOpen && (
         <nav className="md:hidden mt-3 pt-3 border-t border-white/20">
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-5 gap-2">
             {navItems.map(({ to, label, icon: Icon }) => (
               <NavLink
                 key={to}

@@ -31,3 +31,4 @@ Thumbs.db
 # Project
 models/*.pkl
 data/*.csv
+meteo_hourly_checkpoint.csv
