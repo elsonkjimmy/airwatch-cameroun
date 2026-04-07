@@ -153,6 +153,175 @@ const getDirection = (latDiff, lonDiff) => {
 };
 
 // ============================================================================
+// COMPOSANT AQI GAUGE (demi-cercle SVG)
+// ============================================================================
+
+const AQIGauge = ({ aqi, color }) => {
+  // demi-cercle : de -π à 0 (gauche à droite)
+  const clampedAqi = Math.min(500, Math.max(0, aqi));
+  const pct = clampedAqi / 500;
+  const R = 70;
+  const cx = 90;
+  const cy = 90;
+  // arc de 180° (π)
+  const startAngle = Math.PI;
+  const endAngle = 0;
+  const needleAngle = startAngle + pct * (endAngle - startAngle);
+
+  // SVG arc path helper
+  const arcPath = (r, sa, ea) => {
+    const x1 = cx + r * Math.cos(sa);
+    const y1 = cy + r * Math.sin(sa);
+    const x2 = cx + r * Math.cos(ea);
+    const y2 = cy + r * Math.sin(ea);
+    return `M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`;
+  };
+
+  // Colored segments
+  const segments = [
+    { end: 0.1,  color: '#22C55E' },
+    { end: 0.2,  color: '#84CC16' },
+    { end: 0.4,  color: '#EAB308' },
+    { end: 0.6,  color: '#F97316' },
+    { end: 0.8,  color: '#DC2626' },
+    { end: 1.0,  color: '#7C3AED' },
+  ];
+
+  let prevEnd = startAngle;
+  const arcs = segments.map((seg) => {
+    const segEnd = startAngle + seg.end * Math.PI;
+    const path = arcPath(R, prevEnd, segEnd);
+    prevEnd = segEnd;
+    return { path, color: seg.color };
+  });
+
+  // Filled colored arc up to needle
+  const filledEnd = startAngle + pct * Math.PI;
+
+  // Needle
+  const needleLen = 55;
+  const nx = cx + needleLen * Math.cos(needleAngle);
+  const ny = cy + needleLen * Math.sin(needleAngle);
+
+  return (
+    <div className="flex flex-col items-center">
+      <svg width="180" height="105" viewBox="0 0 180 105">
+        {/* Background track */}
+        <path
+          d={arcPath(R, startAngle, endAngle)}
+          fill="none" stroke="#E5E7EB" strokeWidth={18} strokeLinecap="round"
+        />
+        {/* Colored filled arc */}
+        {pct > 0 && (
+          <path
+            d={arcPath(R, startAngle, filledEnd)}
+            fill="none" stroke={color} strokeWidth={18} strokeLinecap="round"
+            style={{ filter: `drop-shadow(0 0 6px ${color}60)` }}
+          />
+        )}
+        {/* Needle */}
+        <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="#1F2937" strokeWidth={3} strokeLinecap="round" />
+        <circle cx={cx} cy={cy} r={6} fill="#1F2937" />
+        {/* Label */}
+        <text x={cx} y={cy - 8} textAnchor="middle" fontSize={28} fontWeight="900" fill={color}>
+          {Math.round(aqi)}
+        </text>
+        <text x={cx} y={cy + 8} textAnchor="middle" fontSize={10} fill="#9CA3AF">
+          AQI
+        </text>
+        {/* Min/Max labels */}
+        <text x={18} y={98} fontSize={9} fill="#9CA3AF">0</text>
+        <text x={152} y={98} fontSize={9} fill="#9CA3AF">500</text>
+      </svg>
+    </div>
+  );
+};
+
+// ============================================================================
+// NATIONAL STATS BAR
+// ============================================================================
+
+const NationalStatsBar = ({ cities }) => {
+  const total = cities.length;
+  const avgAqi = Math.round(cities.reduce((s, c) => s + (c.current.aqi || 0), 0) / total);
+  const critical = cities.filter(c => (c.current.aqi || 0) >= 151).length;
+  const moderate = cities.filter(c => (c.current.aqi || 0) >= 51 && (c.current.aqi || 0) < 151).length;
+  const good = cities.filter(c => (c.current.aqi || 0) < 51).length;
+
+  return (
+    <div className="bg-white border border-gray-100 rounded-2xl px-5 py-3 flex flex-wrap gap-4 items-center justify-between shadow-sm">
+      <div className="flex items-center gap-2">
+        <div className="w-2 h-2 rounded-full bg-teal-500" />
+        <span className="text-sm font-medium text-gray-600">Réseau national</span>
+        <span className="text-sm font-bold text-gray-900">{total} villes</span>
+      </div>
+      <div className="flex flex-wrap gap-5">
+        <div className="text-center">
+          <p className="text-xs text-gray-400">Moyenne nationale</p>
+          <p className="font-bold text-gray-900" style={{ color: avgAqi >= 151 ? '#DC2626' : avgAqi >= 51 ? '#EAB308' : '#22C55E' }}>
+            AQI {avgAqi}
+          </p>
+        </div>
+        <div className="text-center">
+          <p className="text-xs text-gray-400">En alerte</p>
+          <p className="font-bold text-red-600">{critical} <span className="text-xs font-normal">villes</span></p>
+        </div>
+        <div className="text-center">
+          <p className="text-xs text-gray-400">Modéré</p>
+          <p className="font-bold text-yellow-600">{moderate} <span className="text-xs font-normal">villes</span></p>
+        </div>
+        <div className="text-center">
+          <p className="text-xs text-gray-400">Air sain</p>
+          <p className="font-bold text-green-600">{good} <span className="text-xs font-normal">villes</span></p>
+        </div>
+      </div>
+      <div className="flex items-center gap-1 text-xs text-gray-400">
+        <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+        Mis à jour il y a &lt;5 min
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// 24H FORECAST STRIP
+// ============================================================================
+
+const ForecastStrip = ({ aqi, aqiTomorrow, aqiAfter }) => {
+  const days = [
+    { label: "Aujourd'hui", aqi, icon: '🕐' },
+    { label: 'Demain', aqi: aqiTomorrow, icon: '📅' },
+    { label: 'Après-demain', aqi: aqiAfter, icon: '🗓️' },
+  ];
+
+  const getLabel = (v) => {
+    if (v >= 151) return 'Dangereux';
+    if (v >= 101) return 'Mauvais';
+    if (v >= 51) return 'Modéré';
+    return 'Bon';
+  };
+
+  return (
+    <div className="grid grid-cols-3 gap-3 mt-4">
+      {days.map((d, i) => {
+        const color = getAQIColor(d.aqi);
+        return (
+          <div
+            key={i}
+            className="rounded-xl p-3 text-center border"
+            style={{ backgroundColor: `${color}12`, borderColor: `${color}40` }}
+          >
+            <p className="text-xs text-gray-500 mb-1">{d.icon} {d.label}</p>
+            <p className="text-2xl font-black" style={{ color }}>{d.aqi}</p>
+            <p className="text-xs font-medium" style={{ color }}>{getLabel(d.aqi)}</p>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+// ============================================================================
 // COMPOSANT ALERT SOUND (880 Hz bip)
 // ============================================================================
 
@@ -341,6 +510,16 @@ const Dashboard = () => {
   // Régions pour grouper
   const regions = [...new Set(citiesData.map(c => c.region))].sort();
 
+  // Forecast values (seeded for consistency during session)
+  const forecastTomorrow = useMemo(() => {
+    const seed = hashString(selectedCity.name + 'tomorrow');
+    return Math.round(aqi * (0.88 + seededRandom(seed) * 0.26));
+  }, [selectedCity.name, aqi]);
+  const forecastAfter = useMemo(() => {
+    const seed = hashString(selectedCity.name + 'after');
+    return Math.round(aqi * (0.82 + seededRandom(seed) * 0.36));
+  }, [selectedCity.name, aqi]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* ========== ALERT BANNER (si AQI > 150 ou feu FIRMS) ========== */}
@@ -402,6 +581,9 @@ const Dashboard = () => {
       </header>
 
       <div className="w-full px-4 md:px-6 py-6 space-y-6">
+        {/* ========== NATIONAL STATS BAR ========== */}
+        <NationalStatsBar cities={citiesData} />
+
         {/* ========== SCREEN 1: CARTE INTERACTIVE ========== */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="p-4 border-b flex items-center justify-between">
@@ -502,16 +684,13 @@ const Dashboard = () => {
                 {aqiLevel.label}
               </span>
             </div>
-            
-            <div className="text-center py-6">
-              <p 
-                className="text-8xl font-black"
-                style={{ color: getAQIColor(aqi) }}
-              >
-                {aqi}
-              </p>
-              <p className="text-gray-500 mt-2">Indice Qualité Air (AQI)</p>
-            </div>
+
+            {/* AQI Gauge */}
+            <AQIGauge aqi={aqi} color={getAQIColor(aqi)} />
+            <p className="text-center text-gray-500 text-xs -mt-2">Indice Qualité Air (AQI)</p>
+
+            {/* 24h Forecast */}
+            <ForecastStrip aqi={aqi} aqiTomorrow={forecastTomorrow} aqiAfter={forecastAfter} />
             
             {/* Pattern badge */}
             <div 

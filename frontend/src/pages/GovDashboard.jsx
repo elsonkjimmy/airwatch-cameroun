@@ -7,10 +7,46 @@ import {
 import {
   Shield, AlertTriangle, FileText, Download, Building2, Leaf,
   MapPin, Calendar, CheckCircle, XCircle, Clock, Users,
-  Activity, TrendingUp, Filter, ChevronRight
+  Activity, TrendingUp, Filter, ChevronRight, Flame
 } from 'lucide-react';
 
 import citiesData from '../data/cities.json';
+
+// ── Pollution pattern display labels + colors ─────────────────────────────────
+const PATTERN_LABELS = {
+  episode_poussieres:        { label: 'Poussières',    color: '#D97706', bg: '#FEF3C7' },
+  stress_thermique:          { label: 'Stress therm.', color: '#DC2626', bg: '#FEE2E2' },
+  stagnation_atmospherique:  { label: 'Stagnation',    color: '#7C3AED', bg: '#EDE9FE' },
+  particules_saison_seche:   { label: 'Saison sèche',  color: '#EA580C', bg: '#FFEDD5' },
+  episode_feu_confirme:      { label: 'Feu confirmé',  color: '#B91C1C', bg: '#FEE2E2' },
+  qualite_acceptable:        { label: 'Acceptable',    color: '#16A34A', bg: '#DCFCE7' },
+};
+
+const PatternBadge = ({ pattern }) => {
+  const meta = PATTERN_LABELS[pattern] || { label: pattern, color: '#6B7280', bg: '#F3F4F6' };
+  return (
+    <span
+      className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold"
+      style={{ color: meta.color, backgroundColor: meta.bg }}
+    >
+      {meta.label}
+    </span>
+  );
+};
+
+// ── KPI card ──────────────────────────────────────────────────────────────────
+const KPICard = ({ label, value, sub, icon: Icon, color }) => (
+  <div className="bg-white rounded-xl shadow-sm p-4 flex items-center gap-4">
+    <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${color}15` }}>
+      <Icon size={24} style={{ color }} />
+    </div>
+    <div>
+      <p className="text-2xl font-black text-gray-900">{value}</p>
+      <p className="text-sm font-medium text-gray-600">{label}</p>
+      {sub && <p className="text-xs text-gray-400">{sub}</p>}
+    </div>
+  </div>
+);
 
 // ============================================================================
 // UTILITAIRES
@@ -144,15 +180,37 @@ const calculateReforestationPriorities = () => {
 const GovDashboard = () => {
   const [activePanel, setActivePanel] = useState('alerts');
   const [filterLevel, setFilterLevel] = useState('all');
+  const [handledAdvisories, setHandledAdvisories] = useState(new Set());
 
   const alertLog = useMemo(() => generateAlertLog(), []);
   const healthAdvisories = useMemo(() => generateHealthAdvisories(), []);
   const clinicScores = useMemo(() => calculateClinicScores(), []);
   const reforestationData = useMemo(() => calculateReforestationPriorities(), []);
 
-  const filteredAlerts = filterLevel === 'all' 
-    ? alertLog 
+  // KPI calculations
+  const today = useMemo(() => {
+    const now = new Date();
+    return alertLog.filter(a => {
+      const d = new Date(a.datetime);
+      return d.toDateString() === now.toDateString();
+    });
+  }, [alertLog]);
+  const criticalCities = useMemo(() => new Set(alertLog.filter(a => a.level === 'dangerous').map(a => a.city)).size, [alertLog]);
+  const firmsConfirmed = useMemo(() => alertLog.filter(a => a.firmsConfirmed).length, [alertLog]);
+  const avgNationalAqi = Math.round(citiesData.reduce((s, c) => s + (c.current.aqi || 0), 0) / citiesData.length);
+
+  const filteredAlerts = filterLevel === 'all'
+    ? alertLog
     : alertLog.filter(a => a.level === filterLevel);
+
+  const toggleAdvisory = (id) => {
+    setHandledAdvisories(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
 
   // Export CSV
   const exportCSV = () => {
@@ -200,6 +258,38 @@ const GovDashboard = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-6 py-6">
+        {/* ========== KPI ROW ========== */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <KPICard
+            label="Alertes aujourd'hui"
+            value={today.length}
+            sub={`sur ${alertLog.length} au total`}
+            icon={AlertTriangle}
+            color="#DC2626"
+          />
+          <KPICard
+            label="Villes critiques"
+            value={criticalCities}
+            sub="AQI ≥ 151"
+            icon={MapPin}
+            color="#F97316"
+          />
+          <KPICard
+            label="Feux FIRMS"
+            value={firmsConfirmed}
+            sub="confirmés (30j)"
+            icon={Flame}
+            color="#B91C1C"
+          />
+          <KPICard
+            label="AQI moyen national"
+            value={avgNationalAqi}
+            sub={`${citiesData.length} villes surveillées`}
+            icon={Activity}
+            color="#0D7377"
+          />
+        </div>
+
         {/* Navigation Panels */}
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
           {panels.map(panel => (
@@ -279,7 +369,9 @@ const GovDashboard = () => {
                           {alert.aqi}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-gray-600 text-xs">{alert.pattern}</td>
+                      <td className="py-3 px-4 text-gray-600 text-xs">
+                        <PatternBadge pattern={alert.pattern} />
+                      </td>
                       <td className="py-3 px-4 text-center">
                         {alert.firmsConfirmed ? (
                           <CheckCircle className="inline text-green-500" size={18} />
@@ -313,12 +405,14 @@ const GovDashboard = () => {
               <p className="text-sm text-gray-500 mb-4">Recommandations générées selon AQI actuel et prévisions</p>
             </div>
 
-            {healthAdvisories.map(advisory => (
+            {healthAdvisories.map(advisory => {
+              const isHandled = handledAdvisories.has(advisory.id);
+              return (
               <div 
                 key={advisory.id}
-                className={`bg-white rounded-xl shadow-sm p-5 border-l-4 ${
+                className={`bg-white rounded-xl shadow-sm p-5 border-l-4 transition-opacity ${
                   advisory.severity === 'high' ? 'border-red-500' : 'border-orange-400'
-                }`}
+                } ${isHandled ? 'opacity-50' : ''}`}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-2">
@@ -327,14 +421,27 @@ const GovDashboard = () => {
                     <span className="text-gray-400">•</span>
                     <span className="text-sm text-gray-500">{advisory.region}</span>
                   </div>
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${
-                    advisory.type === 'forecast' ? 'bg-blue-100 text-blue-700' :
-                    advisory.type === 'firms' ? 'bg-red-100 text-red-700' :
-                    'bg-purple-100 text-purple-700'
-                  }`}>
-                    {advisory.type === 'forecast' ? 'Prévision' :
-                     advisory.type === 'firms' ? 'Feux détectés' : 'Persistant'}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${
+                      advisory.type === 'forecast' ? 'bg-blue-100 text-blue-700' :
+                      advisory.type === 'firms' ? 'bg-red-100 text-red-700' :
+                      'bg-purple-100 text-purple-700'
+                    }`}>
+                      {advisory.type === 'forecast' ? 'Prévision' :
+                       advisory.type === 'firms' ? 'Feux détectés' : 'Persistant'}
+                    </span>
+                    <button
+                      onClick={() => toggleAdvisory(advisory.id)}
+                      className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-medium transition-all ${
+                        isHandled
+                          ? 'bg-green-100 text-green-700 border border-green-200'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200'
+                      }`}
+                    >
+                      {isHandled ? <CheckCircle size={12} /> : <XCircle size={12} />}
+                      {isHandled ? 'Traité' : 'Marquer traité'}
+                    </button>
+                  </div>
                 </div>
                 
                 <p className="text-gray-700 mb-4">{advisory.message}</p>
@@ -351,7 +458,8 @@ const GovDashboard = () => {
                   </div>
                 </div>
               </div>
-            ))}
+            );
+            })}
           </div>
         )}
 
