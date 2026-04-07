@@ -32,47 +32,42 @@ const getAQILevel = (aqi) => {
   return { level: 'good', label: 'Bon', labelEn: 'Good' };
 };
 
-// Pollution patterns selon les contextes locaux au Cameroun
+// Pollution patterns selon les specs
 const POLLUTION_PATTERNS = {
   episode_poussieres: {
-    label: 'Épisode de poussières sahariennes',
+    label: 'Épisode de poussières',
     labelEn: 'Dust Episode',
     color: '#D97706',
-    icon: Flame, // fallback icon (will be overridden directly by inline usage if needed)
     condition: (data) => data.dust > 50 || (data.windSpeed > 15 && data.humidity < 30),
-    advice: "AVERTISSEMENT SANTÉ : Concentration élevée de particules fines (Harmattan / poussières soufflées). Il est fortement conseillé au grand public de limiter l'exposition à l'air libre et aux groupes vulnérables (enfants, femmes enceintes, vieillards asthmatiques) d'annuler strictement tout effort physique extérieur. Le port d'un masque N95/FFP2 est requis si sortie indispensable. Fermez soigneusement portes et fenêtres des domiciles."
+    advice: "Portez un masque à l'extérieur. Fermez les fenêtres. Rincez les yeux si irritation. Les groupes vulnérables doivent rester à l'intérieur."
   },
   stress_thermique: {
-    label: 'Stress thermique extrême',
+    label: 'Stress thermique',
     labelEn: 'Heat Stress',
     color: '#DC2626',
-    icon: Thermometer,
     condition: (data) => data.tempMax > 33 && data.windSpeed < 10 && data.humidity < 50,
-    advice: "VEILLE CANICULE ET POLLUTION OZONE : Températures dangereusement élevées favorisant la stagnation de l'ozone au sol. Risque mortel d'insolation et crises respiratoires. Annulez tout travail sportif ou ardu à l'extérieur de 11h à 16h. Buvez 1L d'eau toutes les 2h au minimum. Signalez toute personne isolée souffrant de maux de tête chroniques."
+    advice: "Risque d'ozone. Évitez les exercices en extérieur de 11h à 16h. Restez hydraté. Personnes âgées et asthmatiques — restez à l'intérieur."
   },
   stagnation_atmospherique: {
     label: 'Stagnation atmosphérique',
     labelEn: 'Atmospheric Stagnation',
     color: '#7C3AED',
-    icon: Wind,
     condition: (data) => data.windSpeed < 5 && data.humidity > 75 && data.pm25 > 20,
-    advice: "ALERTE SMOG URBAIN : Vents très faibles combinés à l'humidité côtière retenant les émissions automobiles (CO2, NOX, PM2.5) dans les basses couches. La qualité de l'air peut brusquement se dégrader près des grands carrefours. Réduisez vos trajets motorisés. Aérer les domiciles tôt le matin uniquement avant le pic d'activités de pointe à 7h00."
+    advice: "Particules piégées par l'air stagnant. Limitez l'exposition extérieure. Enfants et personnes âgées plus à risque."
   },
   particules_saison_seche: {
-    label: 'Particules liées à la saison sèche',
+    label: 'Particules saison sèche',
     labelEn: 'Dry Season Particles',
     color: '#EA580C',
-    icon: CloudRain,
     condition: (data) => data.pm25 > 35 && data.precipitation < 1,
-    advice: "PRUDENCE INCENDIES & FEUX DE BROUSSE : Assèchement sévère favorisant l'incinération des déchets ou récoltes en périphérie. Inhalation répétée grave pour les alvéoles pulmonaires. Interdiction rigoureuse d'outrepasser les zones industrielles non protégées. Les asthmatiques doivent conserver leurs inhalateurs de crise sur eux à tout moment."
+    advice: "Particules élevées de saison sèche. Source non confirmée. Portez un masque si vous sortez."
   },
   qualite_acceptable: {
-    label: 'Qualité atmosphérique satisfaisante',
+    label: 'Qualité acceptable',
     labelEn: 'Acceptable Quality',
     color: '#22C55E',
-    icon: Shield,
     condition: () => true, // Fallback
-    advice: "CONDITIONS VERTES OPTIMALES : Les niveaux de pollution atmosphérique posent peu ou pas de risque à la santé. La qualité de l'air est idéale pour les activités récréatives, la ventilation naturelle des intérieurs via toutes ouvertures et l'afflux d'air respiratoire pur. Continuez vos habitudes écologiques saines !"
+    advice: "Conditions normales. Pas de précaution particulière nécessaire."
   }
 };
 
@@ -725,6 +720,7 @@ const Dashboard = () => {
                   </span>
                 </div>
 
+                {/* Metrics row */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
                   {[
                     { label: 'PM2.5', value: `${cityData.pm25 || '–'}`, unit: 'µg/m³', color: '#7C3AED' },
@@ -740,8 +736,10 @@ const Dashboard = () => {
                   ))}
                 </div>
 
+                {/* 3-day forecast strip */}
                 <ForecastStrip aqi={aqi} aqiTomorrow={forecastTomorrow} aqiAfter={forecastAfter} />
 
+                {/* Health advice */}
                 <div className="mt-3 p-3 rounded-xl flex items-start gap-2" style={{ backgroundColor: `${pattern.color}12` }}>
                   <Shield size={14} style={{ color: pattern.color }} className="mt-0.5 flex-shrink-0" />
                   <div>
@@ -751,11 +749,12 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
-            
+
+            {/* FIRMS strip */}
             {firms.hasFireNearby && (
               <div className="mt-3 flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700">
                 <Flame size={14} className="text-red-500" />
-                <span>NASA FIRMS : {firms.fireCount50km} feux confirmés à moins de 50km</span>
+                <span><strong>NASA FIRMS :</strong> {firms.fireCount50km} feu(x) à &lt;50 km · intensité max {firms.maxFRP} MW — possible source de fumée</span>
               </div>
             )}
           </div>
@@ -765,8 +764,15 @@ const Dashboard = () => {
             <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
               <h3 className="font-bold text-gray-800 flex items-center gap-2 text-sm">
                 <MapPin size={16} className="text-teal-600" />
-                Carte nationale AQI
+                Carte nationale AQI — {citiesData.length} villes
               </h3>
+              <div className="flex gap-3 text-xs">
+                {[['Bon','bg-green-500'],['Modéré','bg-yellow-500'],['Mauvais','bg-orange-500'],['Dangereux','bg-red-500']].map(([l,c]) => (
+                  <span key={l} className="flex items-center gap-1">
+                    <span className={`w-2.5 h-2.5 rounded-full ${c}`} />{l}
+                  </span>
+                ))}
+              </div>
             </div>
             <div className="h-[360px]">
               <MapContainer center={[6.5, 12.5]} zoom={5.5} style={{ height: '100%', width: '100%' }} scrollWheelZoom={true}>
@@ -802,20 +808,36 @@ const Dashboard = () => {
           {/* ── HISTORICAL TREND (real monthly.json data) ── */}
           <div className="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-800">Historique AQI 2022-2025</h3>
+              <div>
+                <h3 className="font-bold text-gray-800">Historique AQI — {selectedCity.name}</h3>
+                <p className="text-xs text-gray-400 mt-0.5">Données réelles 2022–2025 · Moyennes mensuelles · <span className="text-amber-600 font-medium">Passé ≠ Prédiction IA</span></p>
+              </div>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 rounded-full">
+                <Eye size={12} className="text-gray-500" />
+                <span className="text-xs text-gray-500">Historique</span>
+              </div>
             </div>
             <ResponsiveContainer width="100%" height={220}>
               <AreaChart
                 data={monthlyData
                   .filter(d => d.city === selectedCity.name && d.year >= 2022 && d.aqi != null)
-                  .map(d => ({ date: `${d.month}/${d.year}`, aqi: d.aqi, pm25: d.pm25 }))
+                  .map(d => ({ date: `${['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc'][d.month - 1]} ${d.year}`, aqi: d.aqi, pm25: d.pm25 }))
                 }
               >
+                <defs>
+                  <linearGradient id="aqiGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={getAQIColor(aqi)} stopOpacity={0.25} />
+                    <stop offset="95%" stopColor={getAQIColor(aqi)} stopOpacity={0.02} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                 <XAxis dataKey="date" tick={{ fontSize: 9 }} interval={2} />
                 <YAxis tick={{ fontSize: 10 }} domain={[0, 'auto']} />
-                <Tooltip />
-                <ReferenceLine y={150} stroke="#DC2626" strokeDasharray="4 4" />
+                <Tooltip
+                  formatter={(v, name) => [v, name === 'aqi' ? 'AQI' : 'PM2.5 µg/m³']}
+                  labelFormatter={l => l}
+                />
+                <ReferenceLine y={150} stroke="#DC2626" strokeDasharray="4 4" label={{ value: 'Seuil alerte', position: 'right', fontSize: 9, fill: '#DC2626' }} />
                 <ReferenceLine y={100} stroke="#F97316" strokeDasharray="4 4" />
                 <ReferenceLine y={50} stroke="#EAB308" strokeDasharray="4 4" />
                 <Area type="monotone" dataKey="aqi" stroke={getAQIColor(aqi)} strokeWidth={2} fill="url(#aqiGrad)" name="AQI" />
@@ -882,8 +904,7 @@ const Dashboard = () => {
 
         </div>{/* end MAIN CONTENT */}
       </div>{/* end RIGHT PANEL */}
-    </div>
-
+    </div>{/* end outer flex */}
   );
 };
 

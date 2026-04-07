@@ -7,7 +7,7 @@ import {
 import {
   Shield, AlertTriangle, FileText, Download, Building2, Leaf,
   MapPin, Calendar, CheckCircle, XCircle, Clock, Users,
-  Activity, TrendingUp, Filter, ChevronRight, Flame
+  Activity, TrendingUp, Filter, ChevronRight, Flame, Search
 } from 'lucide-react';
 
 import citiesData from '../data/cities.json';
@@ -236,28 +236,111 @@ const GovDashboard = () => {
     { id: 'reforestation', label: 'Priorité Reboisement', icon: Leaf }
   ];
 
+  const [citySearch, setCitySearch] = useState('');
+
+  const sortedCities = useMemo(() => {
+    const q = citySearch.toLowerCase();
+    return [...citiesData]
+      .filter(c => c.name.toLowerCase().includes(q) || c.region.toLowerCase().includes(q))
+      .sort((a, b) => (b.current.aqi || 0) - (a.current.aqi || 0));
+  }, [citySearch]);
+
   return (
-    <div className="min-h-screen bg-slate-100">
-      {/* Header */}
-      <header className="bg-slate-900 text-white py-4 px-6">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center">
-              <Shield size={24} />
+    <div className="flex h-screen overflow-hidden bg-slate-100">
+
+      {/* ====== LEFT SIDEBAR — 40 VILLES ====== */}
+      <aside className="w-64 bg-slate-900 flex flex-col flex-shrink-0">
+        <div className="p-4 border-b border-slate-800">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-7 h-7 bg-amber-500 rounded-lg flex items-center justify-center">
+              <Shield size={15} />
             </div>
-            <div>
-              <h1 className="text-xl font-bold">AirWatch Gouvernement</h1>
-              <p className="text-slate-400 text-xs">Panneau d'aide à la décision</p>
-            </div>
+            <span className="text-white font-bold text-sm">AirWatch Gov</span>
           </div>
-          <div className="flex items-center gap-2 bg-amber-500/20 text-amber-300 px-3 py-1.5 rounded-full text-sm">
-            <Shield size={16} />
-            Accès Autorisé
+          <p className="text-slate-500 text-xs">Tableau de bord national</p>
+        </div>
+
+        <div className="px-3 py-2 border-b border-slate-800">
+          <div className="relative">
+            <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={citySearch}
+              onChange={e => setCitySearch(e.target.value)}
+              placeholder="Filtrer les villes…"
+              className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+            />
           </div>
         </div>
-      </header>
 
-      <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
+          {sortedCities.map(city => {
+            const aq = city.current.aqi || 0;
+            const isAlert = aq >= 151;
+            const color = aq >= 151 ? '#DC2626' : aq >= 101 ? '#F97316' : aq >= 51 ? '#EAB308' : '#22C55E';
+            return (
+              <div
+                key={city.name}
+                className="flex items-center gap-2 px-3 py-2.5 border-b border-slate-800/60 hover:bg-slate-800 transition-colors"
+              >
+                <div
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm"
+                  style={{ backgroundColor: color }}
+                >
+                  {aq}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-white text-xs font-semibold truncate leading-tight">
+                    {isAlert && <span className="mr-1">🔴</span>}{city.name}
+                  </p>
+                  <p className="text-slate-500 text-[10px] truncate leading-tight">{city.region}</p>
+                </div>
+                <div className="flex-shrink-0">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded font-bold uppercase" style={{ color: color, backgroundColor: `${color}22` }}>
+                    {aq >= 151 ? 'CRIT' : aq >= 101 ? 'MAU' : aq >= 51 ? 'MOD' : 'BON'}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="p-3 border-t border-slate-800 grid grid-cols-2 gap-2 text-center bg-slate-900/50">
+          <div>
+            <p className="text-red-400 font-bold text-sm">{citiesData.filter(c => (c.current.aqi || 0) >= 151).length}</p>
+            <p className="text-slate-500 text-[10px] uppercase tracking-wider">Critiques</p>
+          </div>
+          <div>
+            <p className="text-green-400 font-bold text-sm">{citiesData.filter(c => (c.current.aqi || 0) < 51).length}</p>
+            <p className="text-slate-500 text-[10px] uppercase tracking-wider">Air sain</p>
+          </div>
+        </div>
+      </aside>
+
+      {/* ====== RIGHT CONTENT ====== */}
+      <div className="flex-1 overflow-y-auto bg-slate-50">
+
+        {/* Header content */}
+        <header className="sticky top-0 z-50 bg-white text-slate-800 py-3 px-6 flex items-center justify-between shadow-sm border-b border-slate-200">
+          <div>
+            <h1 className="font-bold text-base flex items-center gap-2">
+               Vue Stratégique Nationale
+            </h1>
+            <p className="text-slate-500 text-xs mt-0.5">Aide à la décision · {citiesData.length} villes étudiées</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 bg-amber-100 text-amber-700 px-3 py-1.5 rounded-full text-xs font-semibold shadow-inner border border-amber-200">
+              <Shield size={13} />
+              Session Gouvenementale Active
+            </div>
+            <button onClick={exportCSV} className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shadow-sm focus:ring-2 focus:ring-slate-900 focus:ring-offset-1">
+              <Download size={13} />
+              Export National CSV
+            </button>
+          </div>
+        </header>
+
+        <div className="px-6 py-6">
         {/* ========== KPI ROW ========== */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <KPICard
@@ -308,89 +391,82 @@ const GovDashboard = () => {
           ))}
         </div>
 
-        {/* ========== PANEL 1: ALERT LOG ========== */}
+        {/* ========== PANEL 1: TOUTES LES VILLES ========== */}
         {activePanel === 'alerts' && (
           <div className="bg-white rounded-2xl shadow-sm">
             <div className="p-5 border-b flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <h2 className="font-bold text-gray-800 text-lg">Log des Alertes</h2>
-                <p className="text-sm text-gray-500">30 derniers jours • {alertLog.length} alertes</p>
+                <h2 className="font-bold text-gray-800 text-lg">Tableau Synthétique National</h2>
+                <p className="text-sm text-gray-500">Vue d'ensemble des {citiesData.length} villes sous surveillance continue</p>
               </div>
               <div className="flex items-center gap-3">
-                <select
-                  value={filterLevel}
-                  onChange={(e) => setFilterLevel(e.target.value)}
-                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm"
-                >
-                  <option value="all">Tous les niveaux</option>
-                  <option value="dangerous">Dangereux</option>
-                  <option value="unhealthy_sensitive">Mauvais (sensibles)</option>
-                  <option value="moderate">Modéré</option>
-                </select>
                 <button
                   onClick={exportCSV}
                   className="flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-teal-700"
                 >
                   <Download size={16} />
-                  Export CSV
+                  Export CSV Complet
                 </button>
               </div>
             </div>
             
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50">
+                <thead className="bg-gray-50 border-b border-gray-100">
                   <tr>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">Ville</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">Date/Heure</th>
-                    <th className="text-center py-3 px-4 font-semibold text-gray-600">AQI</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-600">Pattern</th>
-                    <th className="text-center py-3 px-4 font-semibold text-gray-600">FIRMS</th>
-                    <th className="text-center py-3 px-4 font-semibold text-gray-600">Niveau</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-600">Ville & Région</th>
+                    <th className="text-center py-3 px-4 font-semibold text-gray-600">AQI Actuel</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-600">Pattern Principal</th>
+                    <th className="text-center py-3 px-4 font-semibold text-gray-600">Feux / An (SIM)</th>
+                    <th className="text-center py-3 px-4 font-semibold text-gray-600">Couverture Conv. (NDVI)</th>
+                    <th className="text-center py-3 px-4 font-semibold text-gray-600">État Sanitaire</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredAlerts.slice(0, 20).map((alert, i) => (
-                    <tr key={alert.id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="py-3 px-4">
-                        <div>
-                          <p className="font-medium text-gray-800">{alert.city}</p>
-                          <p className="text-xs text-gray-500">{alert.region}</p>
-                        </div>
-                      </td>
-                      <td className="py-3 px-4 text-gray-600">
-                        {new Date(alert.datetime).toLocaleString('fr-FR')}
-                      </td>
-                      <td className="py-3 px-4 text-center">
-                        <span 
-                          className="inline-block px-2.5 py-1 rounded-full text-white text-xs font-bold"
-                          style={{ backgroundColor: getAQIColor(alert.aqi) }}
-                        >
-                          {alert.aqi}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-gray-600 text-xs">
-                        <PatternBadge pattern={alert.pattern} />
-                      </td>
-                      <td className="py-3 px-4 text-center">
-                        {alert.firmsConfirmed ? (
-                          <CheckCircle className="inline text-green-500" size={18} />
-                        ) : (
-                          <XCircle className="inline text-gray-300" size={18} />
-                        )}
-                      </td>
-                      <td className="py-3 px-4 text-center">
-                        <span className={`text-xs font-medium px-2 py-1 rounded ${
-                          alert.level === 'dangerous' ? 'bg-red-100 text-red-700' :
-                          alert.level === 'unhealthy_sensitive' ? 'bg-orange-100 text-orange-700' :
-                          'bg-yellow-100 text-yellow-700'
-                        }`}>
-                          {alert.level === 'dangerous' ? 'Dangereux' :
-                           alert.level === 'unhealthy_sensitive' ? 'Mauvais' : 'Modéré'}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                  {reforestationData.map((cityData, i) => {
+                    const { name, region, current, fireFrequency, ndvi } = cityData;
+                    const aqiVal = current.aqi || 50;
+                    const isDangerous = aqiVal >= 151;
+                    const isModerate = aqiVal >= 51 && aqiVal < 151;
+                    
+                    return (
+                      <tr key={name} className="border-b border-gray-50 hover:bg-slate-50 transition-colors">
+                        <td className="py-3 px-4">
+                          <p className="font-bold text-slate-800">{name}</p>
+                          <p className="text-xs text-slate-500">{region}</p>
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          <span 
+                            className="inline-block px-3 py-1 rounded-full text-white text-xs font-black shadow-sm"
+                            style={{ backgroundColor: getAQIColor(aqiVal) }}
+                          >
+                            {aqiVal}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-xs">
+                           <PatternBadge pattern={isDangerous ? 'stress_thermique' : isModerate ? 'episode_poussieres' : 'qualite_acceptable'} />
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          <div className="flex items-center justify-center gap-1.5 text-slate-600">
+                            {fireFrequency > 15 && <Flame size={14} className="text-red-500" />}
+                            <span className="font-medium">{fireFrequency}</span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4 text-center font-medium text-slate-700">
+                          {ndvi}
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${
+                            isDangerous ? 'bg-red-100 text-red-700' :
+                            isModerate ? 'bg-orange-100 text-orange-700' :
+                            'bg-green-100 text-green-700'
+                          }`}>
+                            {isDangerous ? 'Aide Urgente' : isModerate ? 'Attention' : 'Sain'}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -605,6 +681,7 @@ const GovDashboard = () => {
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );

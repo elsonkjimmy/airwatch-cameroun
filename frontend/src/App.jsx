@@ -140,40 +140,55 @@ const GovLoginGate = ({ children }) => {
   );
 };
 
-// ─── Main App ──────────────────────────────────────────────────────────────────
-function App() {
+import { useLocation } from 'react-router-dom';
+
+// ─── Main App Content ──────────────────────────────────────────────────────────
+const AppContent = () => {
   const [selectedVille, setSelectedVille] = useState('Yaounde');
+  const location = useLocation();
+
+  // On the standalone dashboard pages, we hide the legacy public Navbar and Footer
+  const isDashboardLayout = location.pathname === '/' || location.pathname === '/gov';
 
   return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
+      {!isDashboardLayout && (
         <Navbar
           selectedVille={selectedVille}
           setSelectedVille={setSelectedVille}
           villesCameroun={villesCameroun}
         />
+      )}
 
-        <main className="flex-1 w-full">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route
-              path="/gov"
-              element={
-                <GovLoginGate>
-                  <GovDashboard />
-                </GovLoginGate>
-              }
-            />
-            <Route path="/analyse" element={<Analyse />} />
-            <Route path="/secteurs" element={<SecteursAffectes />} />
-            <Route path="/comparaison" element={<Comparaison />} />
-            <Route path="/climate" element={<ClimateExplorer />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </main>
+      <main className="flex-1 w-full flex flex-col">
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route
+            path="/gov"
+            element={
+              <GovLoginGate>
+                <GovDashboard />
+              </GovLoginGate>
+            }
+          />
+          <Route path="/analyse" element={<Analyse />} />
+          <Route path="/secteurs" element={<SecteursAffectes />} />
+          <Route path="/comparaison" element={<Comparaison />} />
+          <Route path="/climate" element={<ClimateExplorer />} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </main>
 
-        <Footer />
-      </div>
+      {!isDashboardLayout && <Footer />}
+    </div>
+  );
+};
+
+// ─── Main App Entry ──────────────────────────────────────────────────────────
+function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   );
 }
