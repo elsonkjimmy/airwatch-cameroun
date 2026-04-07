@@ -45,10 +45,6 @@ Recommence le design en partant de zéro avec ces nouvelles specs.
 
 
 
-
-
-
-
 MISE À JOUR IMPORTANTE — lis avant tout.
 
 Le dataset officiel du hackathon est disponible ici :
